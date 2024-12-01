@@ -1,23 +1,20 @@
 package day1
 
 import (
-	"cmp"
 	"slices"
 	"strconv"
 	"strings"
 )
 
 type ListPair struct {
-	L, R      []int
-	Histogram map[int]int
+	L, R []int
 }
 
 func NewListPair(input string) (pair *ListPair) {
 	rows := strings.Split(input, "\n")
 	pair = &ListPair{
-		L:         make([]int, len(rows)),
-		R:         make([]int, len(rows)),
-		Histogram: make(map[int]int),
+		L: make([]int, len(rows)),
+		R: make([]int, len(rows)),
 	}
 	for i, row := range rows {
 		parts := strings.Fields(row)
@@ -26,51 +23,51 @@ func NewListPair(input string) (pair *ListPair) {
 	}
 	slices.Sort(pair.L)
 	slices.Sort(pair.R)
-
-	// Build histogram
-	count := 1
-	current := pair.R[0]
-	for _, this := range pair.R[1:] {
-		if this == current {
-			count++
-		} else {
-			pair.Histogram[current] = count
-			count = 1
-			current = this
-		}
-	}
-	pair.Histogram[current] = count
 	return
 }
 
 func (pair *ListPair) SumDeltas() int {
-	lSorted := sorted(pair.L)
-	rSorted := sorted(pair.R)
-
 	total := 0
-	for i := 0; i < len(lSorted); i++ {
-		total += abs(lSorted[i] - rSorted[i])
+	for i := 0; i < len(pair.L); i++ {
+		total += absInt(pair.L[i] - pair.R[i])
 	}
 	return total
 }
 
 func (pair *ListPair) SimilarityScore() (result int) {
-	for _, num := range pair.L {
-		result += num * pair.Histogram[num]
+	lHist := RunLengthHistogram(pair.L)
+	rHist := RunLengthHistogram(pair.R)
+
+	// This is just a sum of products
+	for value, lCount := range lHist {
+		result += value * lCount * rHist[value]
 	}
 	return
 }
 
-func abs(x int) int {
+// RunLengthHistogram builds a histogram of run-length counts
+// So [1, 1, 1, 4, 4] -> {1: 3, 4: 2}
+func RunLengthHistogram[T comparable](sortedValues []T) (result map[T]int) {
+	result = make(map[T]int)
+	count := 1
+	current := sortedValues[0]
+	for _, this := range sortedValues[1:] {
+		if this == current {
+			count++
+		} else {
+			result[current] = count
+			count = 1
+			current = this
+		}
+	}
+	result[current] = count
+	return
+}
+
+func absInt(x int) int {
 	if x >= 0 {
 		return x
 	} else {
 		return -x
 	}
-}
-
-func sorted[T cmp.Ordered](l []T) []T {
-	lSorted := l[:]
-	slices.Sort(lSorted)
-	return lSorted
 }
