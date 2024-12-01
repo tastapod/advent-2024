@@ -12,9 +12,9 @@ func main() {
 
 func runDay1() {
 	// part 1
-	l, r := day1.ParseInput(input.ReadDay(1))
-	fmt.Printf("Day 1 part 1: %d\n", day1.SumDeltas(l, r)) // 2815556
+	pair := day1.NewListPair(input.ReadDay(1))
+	fmt.Printf("Day 1 part 1: %d\n", pair.SumDeltas()) // 2815556
 
 	// part 2
-	fmt.Printf("Day 1 part 2: %d\n", day1.SimilarityScore(l, r))
+	fmt.Printf("Day 1 part 2: %d\n", pair.SimilarityScore()) // 23927637
 }

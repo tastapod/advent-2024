@@ -20,19 +20,19 @@ func TestParsesInput(t *testing.T) {
 	assert := assert.New(t)
 
 	// when
-	l, r := day1.ParseInput(input)
+	pair := day1.NewListPair(input)
 
 	// then
-	assert.Equal([]int{3, 4, 2, 1, 3, 3}, l)
-	assert.Equal([]int{4, 3, 5, 3, 9, 3}, r)
+	assert.Equal([]int{1, 2, 3, 3, 3, 4}, pair.L)
+	assert.Equal([]int{3, 3, 3, 4, 5, 9}, pair.R)
 }
 
 func TestSumsDeltas(t *testing.T) {
 	// given
-	l, r := day1.ParseInput(input)
+	pair := day1.NewListPair(input)
 
 	// when
-	result := day1.SumDeltas(l, r)
+	result := pair.SumDeltas()
 
 	// then
 	assert.Equal(t, 11, result)
@@ -42,26 +42,22 @@ func TestBuildsHistogram(t *testing.T) {
 	assert := assert.New(t)
 
 	// given
-	_, r := day1.ParseInput(input)
-
-	// when
-	counts := day1.BuildHistogram(r)
+	pair := day1.NewListPair(input)
 
 	// then
-	assert.Equal(3, counts[3])
-	assert.Equal(1, counts[4])
-	assert.Equal(0, counts[2])
-	assert.Equal(1, counts[9])
+	assert.Equal(3, pair.Histogram[3])
+	assert.Equal(1, pair.Histogram[4])
+	assert.Equal(0, pair.Histogram[2])
+	assert.Equal(1, pair.Histogram[9])
 }
 
 func TestCalculatesSimilarityScore(t *testing.T) {
 	// given
-	l, r := day1.ParseInput(input)
+	pair := day1.NewListPair(input)
 
 	// when
-	result := day1.SimilarityScore(l, r)
+	result := pair.SimilarityScore()
 
 	// then
 	assert.Equal(t, 31, result)
-
 }

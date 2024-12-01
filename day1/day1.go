@@ -7,21 +7,45 @@ import (
 	"strings"
 )
 
-func ParseInput(input string) (l, r []int) {
+type ListPair struct {
+	L, R      []int
+	Histogram map[int]int
+}
+
+func NewListPair(input string) (pair *ListPair) {
 	rows := strings.Split(input, "\n")
-	l = make([]int, len(rows))
-	r = make([]int, len(rows))
+	pair = &ListPair{
+		L:         make([]int, len(rows)),
+		R:         make([]int, len(rows)),
+		Histogram: make(map[int]int),
+	}
 	for i, row := range rows {
 		parts := strings.Fields(row)
-		l[i], _ = strconv.Atoi(parts[0])
-		r[i], _ = strconv.Atoi(parts[1])
+		pair.L[i], _ = strconv.Atoi(parts[0])
+		pair.R[i], _ = strconv.Atoi(parts[1])
 	}
+	slices.Sort(pair.L)
+	slices.Sort(pair.R)
+
+	// Build histogram
+	count := 1
+	current := pair.R[0]
+	for _, this := range pair.R[1:] {
+		if this == current {
+			count++
+		} else {
+			pair.Histogram[current] = count
+			count = 1
+			current = this
+		}
+	}
+	pair.Histogram[current] = count
 	return
 }
 
-func SumDeltas(l, r []int) int {
-	lSorted := sorted(l)
-	rSorted := sorted(r)
+func (pair *ListPair) SumDeltas() int {
+	lSorted := sorted(pair.L)
+	rSorted := sorted(pair.R)
 
 	total := 0
 	for i := 0; i < len(lSorted); i++ {
@@ -30,31 +54,10 @@ func SumDeltas(l, r []int) int {
 	return total
 }
 
-func SimilarityScore(l, r []int) (result int) {
-	counts := BuildHistogram(r)
-
-	for _, num := range l {
-		result += num * counts[num]
+func (pair *ListPair) SimilarityScore() (result int) {
+	for _, num := range pair.L {
+		result += num * pair.Histogram[num]
 	}
-	return
-}
-
-func BuildHistogram(nums []int) (result map[int]int) {
-	result = make(map[int]int)
-	numsSorted := sorted(nums)
-
-	count := 1
-	current := numsSorted[0]
-	for i := 1; i < len(numsSorted); i++ {
-		if this := numsSorted[i]; this == current {
-			count++
-		} else {
-			result[current] = count
-			count = 1
-			current = this
-		}
-	}
-	result[current] = count
 	return
 }
 
