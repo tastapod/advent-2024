@@ -1,8 +1,9 @@
-package util
+package parsing
 
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,4 +19,15 @@ func ReadDay(day int) string {
 
 func ReadAndSplitDay(day int) []string {
 	return strings.Split(ReadDay(day), "\n")
+}
+
+func ParseInts(input string) (result []int) {
+
+	fields := strings.Fields(input)
+	result = make([]int, len(fields))
+
+	for i, val := range fields {
+		result[i], _ = strconv.Atoi(val)
+	}
+	return
 }

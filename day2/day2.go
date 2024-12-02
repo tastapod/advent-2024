@@ -1,8 +1,8 @@
 package day2
 
 import (
-	"github.com/tastapod/advent-2024/util"
-	"strings"
+	"github.com/tastapod/advent-2024/ints"
+	"github.com/tastapod/advent-2024/parsing"
 )
 
 type Direction int
@@ -24,6 +24,10 @@ func (p Pair) Direction() Direction {
 	}
 }
 
+type ReportBuilder struct {
+	Values []int
+}
+
 type Report struct {
 	Pairs     []Pair
 	Direction Direction
@@ -35,25 +39,49 @@ func (r *Report) IsSafe() bool {
 			return false
 		}
 
-		if abs := util.AbsInt(pair.L - pair.R); abs < 1 || abs > 3 {
+		if abs := ints.AbsInt(pair.L - pair.R); abs < 1 || abs > 3 {
 			return false
 		}
 	}
 	return true
 }
 
-func NewReport(input string) (result Report) {
-	values := strings.Fields(input)
+func ParseReport(reportLine string) Report {
+	return NewReport(parsing.ParseInts(reportLine))
+}
+
+func IsSafeWithTolerance(reportLine string) bool {
+	data := parsing.ParseInts(reportLine)
+
+	report := NewReport(data)
+	if report.IsSafe() {
+		return true
+	}
+
+	// remove one value at a time
+	for i := 0; i < len(data); i++ {
+		sublist := append(append([]int{}, data[0:i]...), data[i+1:]...)
+		report = NewReport(sublist)
+		if report.IsSafe() {
+			return true
+		}
+	}
+
+	// nothing worked
+	return false
+}
+
+func NewReport(values []int) Report {
 	ls := values[:len(values)-1]
 	rs := values[1:]
 
-	pairs := make([]Pair, len(ls))
+	pairs := make([]Pair, 0, len(ls))
 
 	for i := 0; i < len(ls); i++ {
-		pairs[i] = Pair{
-			L: util.ToInt(ls[i]),
-			R: util.ToInt(rs[i]),
-		}
+		pairs = append(pairs, Pair{
+			L: ls[i],
+			R: rs[i],
+		})
 	}
 
 	return Report{

@@ -1,7 +1,7 @@
 package day1
 
 import (
-	"github.com/tastapod/advent-2024/util"
+	"github.com/tastapod/advent-2024/ints"
 	"slices"
 	"strconv"
 	"strings"
@@ -30,7 +30,7 @@ func NewListPair(input string) (pair *ListPair) {
 func (pair *ListPair) SumDeltas() int {
 	total := 0
 	for i := 0; i < len(pair.L); i++ {
-		total += util.AbsInt(pair.L[i] - pair.R[i])
+		total += ints.AbsInt(pair.L[i] - pair.R[i])
 	}
 	return total
 }
