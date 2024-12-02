@@ -1,6 +1,7 @@
 package day1
 
 import (
+	"github.com/tastapod/advent-2024/util"
 	"slices"
 	"strconv"
 	"strings"
@@ -29,7 +30,7 @@ func NewListPair(input string) (pair *ListPair) {
 func (pair *ListPair) SumDeltas() int {
 	total := 0
 	for i := 0; i < len(pair.L); i++ {
-		total += absInt(pair.L[i] - pair.R[i])
+		total += util.AbsInt(pair.L[i] - pair.R[i])
 	}
 	return total
 }
@@ -62,12 +63,4 @@ func RunLengthHistogram[T comparable](sortedValues []T) (result map[T]int) {
 	}
 	result[current] = count
 	return
-}
-
-func absInt(x int) int {
-	if x >= 0 {
-		return x
-	} else {
-		return -x
-	}
 }
