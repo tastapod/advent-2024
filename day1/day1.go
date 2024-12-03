@@ -1,7 +1,7 @@
 package day1
 
 import (
-	"github.com/tastapod/advent-2024/ints"
+	"github.com/tastapod/advent-2024/internal/ints"
 	"slices"
 	"strconv"
 	"strings"

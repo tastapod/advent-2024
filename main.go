@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"github.com/tastapod/advent-2024/day1"
 	"github.com/tastapod/advent-2024/day2"
-	"github.com/tastapod/advent-2024/parsing"
+	"github.com/tastapod/advent-2024/day3"
+	"github.com/tastapod/advent-2024/internal/parsing"
 )
 
 func main() {
 	runDay1()
 	runDay2()
+	runDay3()
 }
 
 func runDay1() {
@@ -41,4 +43,16 @@ func runDay2() {
 		}
 	}
 	fmt.Printf("Day 2 part 2: %d safe reports\n", numSafe)
+}
+
+func runDay3() {
+	input := parsing.ReadDay(3)
+
+	// part 1
+	part1 := day3.SumMuls(day3.FindMuls(input))
+	fmt.Printf("Day 3 part 1: total = %d\n", part1) // 187825547
+
+	// part 2
+	part2 := day3.SumEnabledMuls(input)
+	fmt.Printf("Day 3 part 2: total = %d\n", part2) // 85508223
 }

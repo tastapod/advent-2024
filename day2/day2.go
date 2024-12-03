@@ -1,8 +1,8 @@
 package day2
 
 import (
-	"github.com/tastapod/advent-2024/ints"
-	"github.com/tastapod/advent-2024/parsing"
+	"github.com/tastapod/advent-2024/internal/ints"
+	"github.com/tastapod/advent-2024/internal/parsing"
 )
 
 type Direction int
