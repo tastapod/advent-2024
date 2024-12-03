@@ -1,11 +1,12 @@
 # Advent of Code 2024
 
-This year I am using Go. I like the way AoC lets me explore Go's APIs and paradigms.
+This year I am using Go. I like the way [Advent of Code][aoc] lets me explore Go's APIs and paradigms.
 
 Some of these would be more expressive in a functional language, and I miss that Go
 does not have these kind of language features, like if-as-value. I might try introducing
 some Map or Reduce-like behaviour, which I started doing [last year][fn].
 
+[aoc]: https://adventofcode.com/
 [fn]: https://github.com/tastapod/advent2023/blob/main/fn/fn.go
 
 ## Notes
