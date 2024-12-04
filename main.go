@@ -64,9 +64,9 @@ func runDay4() {
 
 	// part 1
 	part1 := day4.CountWords("XMAS", input)
-	fmt.Printf("Day 4 part 1: found %d words\n", part1)
+	fmt.Printf("Day 4 part 1: found %d words\n", part1) // 2578
 
 	// part 2
 	part2 := day4.CountCrossMAS(input)
-	fmt.Printf("Day 4 part 2: found %d X-MAS", part2)
+	fmt.Printf("Day 4 part 2: found %d X-MAS", part2) // 1972
 }
