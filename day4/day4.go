@@ -73,3 +73,26 @@ func CountWords(word string, source []string) (result int) {
 	}
 	return
 }
+
+func HasCrossMAS(grid Grid, pos Pos) bool {
+	return isMAS(grid[pos.Row-1][pos.Col-1], grid[pos.Row][pos.Col], grid[pos.Row+1][pos.Col+1]) &&
+		isMAS(grid[pos.Row-1][pos.Col+1], grid[pos.Row][pos.Col], grid[pos.Row+1][pos.Col-1])
+}
+
+func isMAS(r1, r2, r3 rune) bool {
+	return r2 == 'A' && (r1 == 'M' && r3 == 'S' || r1 == 'S' && r3 == 'M')
+}
+
+func CountCrossMAS(source []string) (result int) {
+	pad := 1
+	grid := PadGrid(source, pad)
+
+	for row := range len(source) {
+		for col := range len(source[0]) {
+			if HasCrossMAS(grid, Pos{row + pad, col + pad}) {
+				result++
+			}
+		}
+	}
+	return
+}

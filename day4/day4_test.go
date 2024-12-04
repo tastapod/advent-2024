@@ -107,3 +107,19 @@ func TestCountsAllWords(t *testing.T) {
 	// given
 	assert.Equal(t, 18, day4.CountWords("XMAS", Part1Grid))
 }
+
+func TestFindsCrossMAS(t *testing.T) {
+	// given
+	grid := day4.Grid{
+		[]rune(".M.S."),
+		[]rune("..A.."),
+		[]rune(".M.S."),
+	}
+
+	// then
+	assert.True(t, day4.HasCrossMAS(grid, day4.Pos{Row: 1, Col: 2}))
+}
+
+func TestCountsAllCrossMASs(t *testing.T) {
+	assert.Equal(t, 9, day4.CountCrossMAS(Part1Grid))
+}
