@@ -5,6 +5,7 @@ import (
 	"github.com/tastapod/advent-2024/day1"
 	"github.com/tastapod/advent-2024/day2"
 	"github.com/tastapod/advent-2024/day3"
+	"github.com/tastapod/advent-2024/day4"
 	"github.com/tastapod/advent-2024/internal/parsing"
 )
 
@@ -12,6 +13,7 @@ func main() {
 	runDay1()
 	runDay2()
 	runDay3()
+	runDay4()
 }
 
 func runDay1() {
@@ -55,4 +57,12 @@ func runDay3() {
 	// part 2
 	part2 := day3.SumEnabledMuls(input)
 	fmt.Printf("Day 3 part 2: total = %d\n", part2) // 85508223
+}
+
+func runDay4() {
+	input := parsing.ReadAndSplitDay(4)
+
+	// part 1
+	part1 := day4.CountWords("XMAS", input)
+	fmt.Printf("Day 4 part 1: found %d words\n", part1)
 }
