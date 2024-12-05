@@ -49,8 +49,8 @@ Prints:
 
 ### Day 5
 
-This was a fun one. I made an assumption that all I just needed the rule pairs, and that I wouldn't need to build a graph, which turned out to be true. The rules contained every pair combo so there was no transitive logic.
+This was a fun one. I made an assumption that I just needed the literal rule pairs and that I wouldn't need to build a graph, which turned out to be true. The rules contain every pair combo so there is no transitive logic.
 
-Because of this, for part 2 I was able to just the builtin `slice.SortedFunc` function, passing it a comparator that does an existence check in the rule table. If the rule exists, they are already in the correct order. Simples!
+Because of this, for part 2 I was able to just use the builtin `slice.SortedFunc` function, passing it a comparator that does an existence check in the rule table. If the rule exists, the pair is in the correct order. Simples!
 
-Spoiler! The solution is 'dumber' than I realised. You can think of the page numbers just as symbols. The only time you need to process them as values is when you are summing the middle value. The rest of the time, the rule checking is just an existence check for "before|after". So now I have dumbed down my solution.
+Spoiler! The solution is 'dumber' than I realised. You can think of the page numbers just as symbols. The only time you need to parse a value is when you are summing the middle values. The rest of the time, the rule checking is just an existence check for "before|after". So now I have dumbed down my solution.
