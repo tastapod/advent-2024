@@ -82,5 +82,5 @@ func runDay5() {
 	fmt.Printf("Day 5 part 1: total = %d\n", part1) // 6267
 
 	part2 := day5.SumMiddleValuesOfFixedUpdates(rules, updates)
-	fmt.Printf("Day 5 part 2: total = %d\n", part2)
+	fmt.Printf("Day 5 part 2: total = %d\n", part2) // 5184
 }
