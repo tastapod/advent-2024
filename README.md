@@ -18,3 +18,37 @@ I feel part 2 could be less clunky / more elegant in terms of how I am removing 
 ### Day 3
 
 I am liking how Go does regexp capture groups. This solution was neat (and quick!) and I like how the code came out.
+
+### Day 4
+
+I lost a chunk of time by not realising that `range` defaults to providing its index rather than its values, by which I mean:
+
+```golang
+for delta := range []int{-1, 0, 1} {
+	println(delta)
+}
+
+Prints:
+0
+1
+2
+```
+
+To get the actual values, you need:
+
+```go
+for _, delta := range []int{-1, 0, 1} {
+	println(delta)
+}
+
+Prints:
+-1
+0
+1
+```
+
+### Day 5
+
+This was a fun one. I made an assumption that all I just needed the rule pairs, and that I wouldn't need to build a graph, which turned out to be true. The rules contained every pair combo so there was no transitive logic.
+
+Because of this, for part 2 I was able to just the builtin `slice.SortedFunc` function, passing it a comparator that does an existence check in the rule table. If the rule exists, they are already in the correct order. Simples!
