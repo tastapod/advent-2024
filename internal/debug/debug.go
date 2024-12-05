@@ -11,7 +11,7 @@ func Debug(vs ...any) {
 	for i, v := range vs {
 		out[i] = fmt.Sprintf("%v", v)
 	}
-	println(strings.Join(out, " | "))
+	println(strings.Join(out, " "))
 }
 
 func Debugf(msg string, vs ...any) {

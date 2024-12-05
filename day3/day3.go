@@ -1,7 +1,7 @@
 package day3
 
 import (
-	"github.com/tastapod/advent-2024/internal/ints"
+	"github.com/tastapod/advent-2024/internal/parsing"
 	"regexp"
 )
 
@@ -14,7 +14,7 @@ func FindMuls(input string) [][]string {
 }
 
 func Multiply(match []string) int {
-	return ints.ToInt(match[1]) * ints.ToInt(match[2])
+	return parsing.Int(match[1]) * parsing.Int(match[2])
 }
 
 func SumMuls(muls [][]string) (result int) {

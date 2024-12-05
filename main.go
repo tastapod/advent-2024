@@ -6,6 +6,7 @@ import (
 	"github.com/tastapod/advent-2024/day2"
 	"github.com/tastapod/advent-2024/day3"
 	"github.com/tastapod/advent-2024/day4"
+	"github.com/tastapod/advent-2024/day5"
 	"github.com/tastapod/advent-2024/internal/parsing"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	runDay2()
 	runDay3()
 	runDay4()
+	runDay5()
 }
 
 func runDay1() {
@@ -68,5 +70,14 @@ func runDay4() {
 
 	// part 2
 	part2 := day4.CountCrossMAS(input)
-	fmt.Printf("Day 4 part 2: found %d X-MAS", part2) // 1972
+	fmt.Printf("Day 4 part 2: found %d X-MAS\n", part2) // 1972
+}
+
+func runDay5() {
+	input := parsing.ReadDay(5)
+
+	// part 1
+	rules, updates := day5.ParseInput(input)
+	part1 := day5.SumMiddleValuesOfCorrectUpdates(rules, updates)
+	fmt.Printf("Day 5 part 1: total = %d\n", part1) // 6267
 }

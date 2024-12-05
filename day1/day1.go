@@ -30,7 +30,7 @@ func NewListPair(input string) (pair *ListPair) {
 func (pair *ListPair) SumDeltas() int {
 	total := 0
 	for i := 0; i < len(pair.L); i++ {
-		total += ints.AbsInt(pair.L[i] - pair.R[i])
+		total += ints.Abs(pair.L[i] - pair.R[i])
 	}
 	return total
 }

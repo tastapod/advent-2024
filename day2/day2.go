@@ -39,7 +39,7 @@ func (r *Report) IsSafe() bool {
 			return false
 		}
 
-		if abs := ints.AbsInt(pair.L - pair.R); abs < 1 || abs > 3 {
+		if abs := ints.Abs(pair.L - pair.R); abs < 1 || abs > 3 {
 			return false
 		}
 	}
@@ -47,11 +47,11 @@ func (r *Report) IsSafe() bool {
 }
 
 func ParseReport(reportLine string) Report {
-	return NewReport(parsing.ParseInts(reportLine))
+	return NewReport(parsing.Ints(reportLine))
 }
 
 func IsSafeWithTolerance(reportLine string) bool {
-	data := parsing.ParseInts(reportLine)
+	data := parsing.Ints(reportLine)
 
 	report := NewReport(data)
 	if report.IsSafe() {
