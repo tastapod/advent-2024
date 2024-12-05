@@ -61,13 +61,19 @@ func CountWords(word string, source []string) (result int) {
 
 	for row := range len(source) {
 		for col := range len(source[0]) {
-			// check words in all directions
-			for _, dRow := range []int{-1, 0, 1} {
-				for _, dCol := range []int{-1, 0, 1} {
-					if HasWord(word, grid, Dir{dRow, dCol}, Pos{row + pad, col + pad}) {
-						result++
-					}
-				}
+			pos := Pos{row + pad, col + pad}
+			result += countWordsAroundPosition(word, grid, pos)
+		}
+	}
+	return
+}
+
+func countWordsAroundPosition(word string, grid Grid, pos Pos) (result int) {
+	// check all directions
+	for _, dRow := range []int{-1, 0, 1} {
+		for _, dCol := range []int{-1, 0, 1} {
+			if HasWord(word, grid, Dir{dRow, dCol}, pos) {
+				result++
 			}
 		}
 	}
