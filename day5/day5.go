@@ -3,23 +3,13 @@ package day5
 import (
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"slices"
+	"strings"
 )
 
-type Update []string
-
-func NewUpdate(input string) Update {
-	return parsing.PartsWithSep(input, ",")
-}
-
-func ParseInput(input string) (rules []string, updates []Update) {
-	var parts = parsing.PartsWithSep(input, "\n\n")
+func ParseInput(input string) (rules, updates []string) {
+	parts := parsing.PartsWithSep(input, "\n\n")
 	rules = parsing.Parts(parts[0])
-
-	var updatesInput = parsing.Parts(parts[1])
-	updates = make([]Update, len(updatesInput))
-	for i, p := range updatesInput {
-		updates[i] = NewUpdate(p)
-	}
+	updates = parsing.Parts(parts[1])
 	return
 }
 
@@ -37,7 +27,7 @@ func NewRuleChecker(rules []string) (r RuleChecker) {
 	return
 }
 
-func (checker *RuleChecker) IsValidUpdate(update Update) bool {
+func (checker *RuleChecker) IsValidUpdate(update []string) bool {
 	for i, page := range update[1:] {
 		// ensure all pages before this one should be before it
 		for _, before := range update[:i+1] {
@@ -49,9 +39,13 @@ func (checker *RuleChecker) IsValidUpdate(update Update) bool {
 	return true
 }
 
+func ParseUpdate(line string) []string {
+	return strings.Split(line, ",")
+}
+
 // SortUpdate uses the builtin [slices.SortFunc] by checking the rules table
 // for each pair we want to compare.
-func (checker *RuleChecker) SortUpdate(unsorted Update) (result Update) {
+func (checker *RuleChecker) SortUpdate(unsorted []string) (result []string) {
 	// return -1 for correct order or +1 to swap them
 	cmpPages := func(p1, p2 string) int {
 		// this is dirty but super terse!
@@ -61,10 +55,11 @@ func (checker *RuleChecker) SortUpdate(unsorted Update) (result Update) {
 	return
 }
 
-func SumMiddleValuesOfCorrectUpdates(rules []string, updates []Update) (total int) {
-	checker := NewRuleChecker(rules)
+func SumMiddleValuesOfCorrectUpdates(ruleLines []string, updateLines []string) (total int) {
+	checker := NewRuleChecker(ruleLines)
 
-	for _, update := range updates {
+	for _, updateLine := range updateLines {
+		update := ParseUpdate(updateLine)
 		if checker.IsValidUpdate(update) {
 			total += parsing.Int(update[len(update)/2])
 		}
@@ -72,10 +67,11 @@ func SumMiddleValuesOfCorrectUpdates(rules []string, updates []Update) (total in
 	return
 }
 
-func SumMiddleValuesOfFixedUpdates(rules []string, updates []Update) (total int) {
-	checker := NewRuleChecker(rules)
+func SumMiddleValuesOfFixedUpdates(ruleLines []string, updateLines []string) (total int) {
+	checker := NewRuleChecker(ruleLines)
 
-	for _, update := range updates {
+	for _, updateLine := range updateLines {
+		update := ParseUpdate(updateLine)
 		if !checker.IsValidUpdate(update) {
 			fixed := checker.SortUpdate(update)
 			total += parsing.Int(fixed[len(fixed)/2])

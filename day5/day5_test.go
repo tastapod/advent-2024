@@ -55,7 +55,7 @@ func TestChecksPageOrder(t *testing.T) {
 
 	// then
 	for i, update := range updates {
-		assert.Equal(t, isCorrect[i], checker.IsValidUpdate(update), update)
+		assert.Equal(t, isCorrect[i], checker.IsValidUpdate(day5.ParseUpdate(update)), update)
 	}
 }
 
@@ -72,8 +72,8 @@ func TestSortsIncorrectUpdate(t *testing.T) {
 	rules, _ := day5.ParseInput(Part1Input)
 	checker := day5.NewRuleChecker(rules)
 
-	result := checker.SortUpdate(day5.NewUpdate("75,97,47,61,53")) // incorrect
-	expected := day5.NewUpdate("97,75,47,61,53")
+	result := checker.SortUpdate(day5.ParseUpdate("75,97,47,61,53")) // incorrect
+	expected := day5.ParseUpdate("97,75,47,61,53")
 
 	assert.Equal(t, expected, result)
 }
