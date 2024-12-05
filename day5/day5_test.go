@@ -66,3 +66,19 @@ func TestSumsMiddleValues(t *testing.T) {
 	// then
 	assert.Equal(t, 143, day5.SumMiddleValuesOfCorrectUpdates(rules, updates))
 }
+
+func TestSortsIncorrectUpdate(t *testing.T) {
+	// given
+	rules, _ := day5.ParseInput(Part1Input)
+	checker := day5.NewRuleChecker(rules)
+
+	result := checker.SortUpdate(day5.NewUpdate("75,97,47,61,53")) // incorrect
+	expected := day5.NewUpdate("97,75,47,61,53")
+
+	assert.Equal(t, expected, result)
+}
+
+func TestSumsCorrectedMiddleValues(t *testing.T) {
+	rules, updates := day5.ParseInput(Part1Input)
+	assert.Equal(t, 123, day5.SumMiddleValuesOfFixedUpdates(rules, updates))
+}
