@@ -3,6 +3,7 @@ package day4_test
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tastapod/advent-2024/day4"
+	"github.com/tastapod/advent-2024/grids"
 	"strings"
 	"testing"
 )
@@ -15,8 +16,8 @@ func TestFindsWordForwards(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		day4.Dir{DRow: 0, DCol: +1},
-		day4.Pos{Row: 0, Col: 2},
+		grids.Delta{DRow: 0, DCol: +1},
+		grids.Pos{Row: 0, Col: 2},
 	))
 }
 
@@ -28,8 +29,8 @@ func TestFindsWordBackwards(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		day4.Dir{DRow: 0, DCol: -1},
-		day4.Pos{Row: 0, Col: 5},
+		grids.Delta{DRow: 0, DCol: -1},
+		grids.Pos{Row: 0, Col: 5},
 	))
 }
 
@@ -46,8 +47,8 @@ func TestFindsWordDown(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		day4.Dir{DRow: +1, DCol: 0},
-		day4.Pos{Row: 0, Col: 4},
+		grids.Delta{DRow: +1, DCol: 0},
+		grids.Pos{Row: 0, Col: 4},
 	))
 }
 
@@ -64,8 +65,8 @@ func TestFindsWordUpRight(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		day4.Dir{DRow: -1, DCol: +1},
-		day4.Pos{Row: 3, Col: 2},
+		grids.Delta{DRow: -1, DCol: +1},
+		grids.Pos{Row: 3, Col: 2},
 	))
 }
 
@@ -86,7 +87,7 @@ func TestBuildsPaddedGrid(t *testing.T) {
 	assert := assert.New(t)
 
 	// given
-	grid := day4.PadGrid(Part1Grid, 3)
+	grid := grids.PadGrid(Part1Grid, 3)
 
 	// then
 	padding := make([]rune, 16) // 3 + 10 + 3
@@ -110,14 +111,14 @@ func TestCountsAllWords(t *testing.T) {
 
 func TestFindsCrossMAS(t *testing.T) {
 	// given
-	grid := day4.Grid{
+	grid := grids.Grid{
 		[]rune(".M.S."),
 		[]rune("..A.."),
 		[]rune(".M.S."),
 	}
 
 	// then
-	assert.True(t, day4.HasCrossMAS(grid, day4.Pos{Row: 1, Col: 2}))
+	assert.True(t, day4.HasCrossMAS(grid, grids.Pos{Row: 1, Col: 2}))
 }
 
 func TestCountsAllCrossMASs(t *testing.T) {

@@ -7,6 +7,7 @@ import (
 	"github.com/tastapod/advent-2024/day3"
 	"github.com/tastapod/advent-2024/day4"
 	"github.com/tastapod/advent-2024/day5"
+	"github.com/tastapod/advent-2024/day6"
 	"github.com/tastapod/advent-2024/internal/parsing"
 )
 
@@ -16,6 +17,7 @@ func main() {
 	runDay3()
 	runDay4()
 	runDay5()
+	runDay6()
 }
 
 func runDay1() {
@@ -83,4 +85,14 @@ func runDay5() {
 
 	part2 := day5.SumMiddleValuesOfFixedUpdates(rules, updates)
 	fmt.Printf("Day 5 part 2: total = %d\n", part2) // 5184
+}
+
+func runDay6() {
+	input := parsing.ReadDay(6)
+
+	// day1
+	guard := day6.NewGuard(input)
+	part1 := guard.CountAllPositions()
+
+	fmt.Printf("Day 6 part 1: total = %d\n", part1)
 }
