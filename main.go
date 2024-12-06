@@ -90,9 +90,12 @@ func runDay5() {
 func runDay6() {
 	input := parsing.ReadDay(6)
 
-	// day1
+	// part 1
 	guard := day6.NewGuard(input)
 	part1 := guard.CountAllPositions()
+	fmt.Printf("Day 6 part 1: total = %d\n", part1) // 4826
 
-	fmt.Printf("Day 6 part 1: total = %d\n", part1)
+	// part 2
+	part2 := day6.CountWaysToForceLoop(input)
+	fmt.Printf("Day 6 part 2: total = %d\n", part2) // 1721
 }

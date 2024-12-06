@@ -2,7 +2,6 @@ package day6
 
 import (
 	"github.com/tastapod/advent-2024/grids"
-	"github.com/tastapod/advent-2024/internal/debug"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"strings"
 )
@@ -33,7 +32,6 @@ func NewGuard(mapInput string) (g *Guard) {
 
 			// don't forget to reset our starting point!
 			rowChars[col] = '.'
-			debug.Debug("Starting at", g.Here)
 			break
 		}
 	}
@@ -42,14 +40,19 @@ func NewGuard(mapInput string) (g *Guard) {
 }
 
 func (g *Guard) CountAllPositions() int {
-	for g.Move() {
-		// we just moved!
-	}
+	g.MoveUntilFinished()
 	allPositions := make(map[grids.Pos]bool)
 	for step := range g.History {
 		allPositions[step.Pos] = true
 	}
 	return len(allPositions)
+}
+
+func (g *Guard) MoveUntilFinished() (result WhatHappened) {
+	for result = g.Move(); result == Moved; result = g.Move() {
+		// we just moved!
+	}
+	return
 }
 
 var TurnRight = map[grids.Dir]grids.Dir{
@@ -59,8 +62,16 @@ var TurnRight = map[grids.Dir]grids.Dir{
 	grids.Left:  grids.Up,
 }
 
+type WhatHappened int
+
+const (
+	Moved WhatHappened = iota
+	Looped
+	Exited
+)
+
 // Move moves the guard if possible and returns true, otherwise returns false
-func (g *Guard) Move() (moved bool) {
+func (g *Guard) Move() (whatHappened WhatHappened) {
 	var nextStep Step
 	var nextPos = g.Here.Move(grids.Moves[g.Here.Dir])
 
@@ -75,19 +86,45 @@ func (g *Guard) Move() (moved bool) {
 		nextStep = Step{g.Here.Pos, TurnRight[g.Here.Dir]}
 	default:
 		// walked off the grid, so we are done
-		return false
+		return Exited
 	}
 
 	if g.History[nextStep] {
 		// we've been here, in the same direction
-		//debug.Debug("Already visited", nextStep)
-		moved = false
+		whatHappened = Looped
 	} else {
 		// take the step
 		//debug.Debug("Moving to", nextStep)
 		g.Here = nextStep
 		g.History[g.Here] = true
-		moved = true
+		whatHappened = Moved
+	}
+	return
+}
+
+func StartMapMutator(startMap string, ch chan<- string) {
+	go func() {
+		runes := []rune(startMap)
+		for i, char := range runes {
+			if char == '.' {
+				newMap := append([]rune{}, runes[:i]...)
+				newMap = append(newMap, '#')
+				newMap = append(newMap, runes[i+1:]...)
+				ch <- string(newMap)
+			}
+		}
+		close(ch)
+	}()
+}
+
+func CountWaysToForceLoop(input string) (result int) {
+	maps := make(chan string)
+	go StartMapMutator(input, maps)
+
+	for mutated := range maps {
+		if NewGuard(mutated).MoveUntilFinished() == Looped {
+			result++
+		}
 	}
 	return
 }
