@@ -3,7 +3,9 @@ package day6
 import (
 	"github.com/tastapod/advent-2024/grids"
 	"github.com/tastapod/advent-2024/internal/parsing"
+	"runtime"
 	"strings"
+	"sync"
 )
 
 type Step struct {
@@ -103,26 +105,43 @@ func (g *Guard) Move() (whatHappened WhatHappened) {
 }
 
 func StartMapMutator(startMap string, ch chan<- string) {
-	go func() {
-		runes := []rune(startMap)
-		for i, char := range runes {
+	runes := []rune(startMap)
+	waitGroup := sync.WaitGroup{}
+
+	for i, char := range runes {
+		go func() {
+			waitGroup.Add(1)
 			if char == '.' {
 				newMap := append([]rune{}, runes[:i]...)
 				newMap = append(newMap, '#')
 				newMap = append(newMap, runes[i+1:]...)
 				ch <- string(newMap)
 			}
-		}
-		close(ch)
-	}()
+			waitGroup.Done()
+		}()
+	}
+
+	waitGroup.Wait()
+	close(ch)
 }
 
 func CountWaysToForceLoop(input string) (result int) {
 	maps := make(chan string)
-	go StartMapMutator(input, maps)
+	results := make(chan WhatHappened)
+	numMaps := 0
 
+	go StartMapMutator(input, maps)
+	runtime.NumCPU()
+
+	// spin up lots of consumers
 	for mutated := range maps {
-		if NewGuard(mutated).MoveUntilFinished() == Looped {
+		numMaps++
+		go func() {
+			results <- NewGuard(mutated).MoveUntilFinished()
+		}()
+	}
+	for range numMaps {
+		if <-results == Looped {
 			result++
 		}
 	}

@@ -9,15 +9,22 @@ import (
 	"github.com/tastapod/advent-2024/day5"
 	"github.com/tastapod/advent-2024/day6"
 	"github.com/tastapod/advent-2024/internal/parsing"
+	"time"
 )
 
 func main() {
-	runDay1()
-	runDay2()
-	runDay3()
-	runDay4()
-	runDay5()
-	runDay6()
+	stopwatch(runDay1)
+	stopwatch(runDay3)
+	stopwatch(runDay2)
+	stopwatch(runDay4)
+	stopwatch(runDay5)
+	stopwatch(runDay6)
+}
+
+func stopwatch(fn func()) {
+	start := time.Now()
+	fn()
+	fmt.Printf("%d µs\n", time.Since(start).Microseconds())
 }
 
 func runDay1() {
