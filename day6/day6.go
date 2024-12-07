@@ -110,36 +110,40 @@ func (gt *GuardTracker) Move() (result WhatHappened) {
 }
 
 func CountWaysToForceLoop(grid grids.Grid) (total int) {
-	results := make(chan bool)
+	results := make(chan bool) // we will only send successes along this
 	trackerGroup := sync.WaitGroup{}
-	readerGroup := sync.WaitGroup{}
 
-	// reader for results, counts into total
-	readerGroup.Add(1)
-	go func(in <-chan bool) {
-		defer readerGroup.Done()
-		// block until there is some data, then read until closed
-		for range in {
-			total++
-		}
-	}(results)
+	rowsToCheck := len(grid) - 1
+	colsToCheck := len(grid[0]) - 1
 
-	// then spin up the workers
-	for row := 1; row < len(grid)-1; row++ {
-		for col := 1; col < len(grid[0])-1; col++ {
+	// spin up the workers
+	for row := 1; row < rowsToCheck; row++ {
+		for col := 1; col < colsToCheck; col++ {
+			// so we can wait for them at the end
 			trackerGroup.Add(1)
+
+			// always pass the writer channel explicitly, because reasons
 			go func(out chan<- bool) {
 				defer trackerGroup.Done()
 				tracker := NewGuardTrackerWithObstacle(grid, grids.Pos{Row: row, Col: col})
-				if tracker.MoveUntilFinished() == Looped {
+
+				if result := tracker.MoveUntilFinished(); result == Looped {
 					out <- true
 				}
 			}(results)
 		}
 	}
 
-	trackerGroup.Wait()
-	close(results)
-	readerGroup.Wait()
+	// close the results channel after all the work is done
+	go func() {
+		trackerGroup.Wait()
+		close(results)
+	}()
+
+	// keep reading until all the results are in
+	for range results {
+		total++
+	}
+
 	return
 }
