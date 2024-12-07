@@ -2,6 +2,7 @@ package debug
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -11,9 +12,9 @@ func Debug(vs ...any) {
 	for i, v := range vs {
 		out[i] = fmt.Sprintf("%v", v)
 	}
-	println(strings.Join(out, " "))
+	_, _ = fmt.Fprintln(os.Stderr, strings.Join(out, " "))
 }
 
 func Debugf(msg string, vs ...any) {
-	fmt.Printf(msg+"\n", vs...)
+	_, _ = fmt.Fprintf(os.Stderr, msg+"\n", vs...)
 }

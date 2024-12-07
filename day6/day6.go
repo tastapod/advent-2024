@@ -2,8 +2,6 @@ package day6
 
 import (
 	"github.com/tastapod/advent-2024/grids"
-	"github.com/tastapod/advent-2024/internal/parsing"
-	"runtime"
 	"strings"
 	"sync"
 )
@@ -13,15 +11,16 @@ type Step struct {
 	grids.Dir
 }
 
-type Guard struct {
+type GuardTracker struct {
 	grids.Grid
-	Here    Step
-	History map[Step]bool
+	Here     Step
+	History  map[Step]bool
+	Obstacle grids.Pos
 }
 
-func NewGuard(mapInput string) (g *Guard) {
-	g = &Guard{
-		Grid: grids.PadGrid(parsing.Parts(mapInput), 1),
+func NewGuardTracker(grid grids.Grid) (g *GuardTracker) {
+	g = &GuardTracker{
+		Grid: grid,
 	}
 
 	for row, rowChars := range g.Grid {
@@ -31,27 +30,29 @@ func NewGuard(mapInput string) (g *Guard) {
 				grids.Dir(rowChars[col]),
 			}
 			g.History = map[Step]bool{g.Here: true}
-
-			// don't forget to reset our starting point!
-			rowChars[col] = '.'
 			break
 		}
 	}
-
 	return
 }
 
-func (g *Guard) CountAllPositions() int {
-	g.MoveUntilFinished()
+func NewGuardTrackerWithObstacle(grid grids.Grid, obstacle grids.Pos) (gt *GuardTracker) {
+	gt = NewGuardTracker(grid)
+	gt.Obstacle = obstacle
+	return
+}
+
+func (gt *GuardTracker) CountAllPositions() int {
+	gt.MoveUntilFinished()
 	allPositions := make(map[grids.Pos]bool)
-	for step := range g.History {
+	for step := range gt.History {
 		allPositions[step.Pos] = true
 	}
 	return len(allPositions)
 }
 
-func (g *Guard) MoveUntilFinished() (result WhatHappened) {
-	for result = g.Move(); result == Moved; result = g.Move() {
+func (gt *GuardTracker) MoveUntilFinished() (result WhatHappened) {
+	for result = gt.Move(); result == Moved; result = gt.Move() {
 		// we just moved!
 	}
 	return
@@ -73,77 +74,72 @@ const (
 )
 
 // Move moves the guard if possible and returns true, otherwise returns false
-func (g *Guard) Move() (whatHappened WhatHappened) {
+func (gt *GuardTracker) Move() (result WhatHappened) {
 	var nextStep Step
-	var nextPos = g.Here.Move(grids.Moves[g.Here.Dir])
+	var nextPos = gt.Here.Move(grids.Moves[gt.Here.Dir])
 
-	contents := g.Grid[nextPos.Row][nextPos.Col]
-
-	switch contents {
-	case '.':
-		// valid move, keep in this direction
-		nextStep = Step{nextPos, g.Here.Dir}
-	case '#':
-		// hit an obstacle, so turn right
-		nextStep = Step{g.Here.Pos, TurnRight[g.Here.Dir]}
-	default:
-		// walked off the grid, so we are done
-		return Exited
+	var contents rune
+	if nextPos == gt.Obstacle {
+		contents = '#'
+	} else {
+		contents = gt.Grid[nextPos.Row][nextPos.Col]
 	}
 
-	if g.History[nextStep] {
+	switch contents {
+	case 0:
+		// walked off the grid, so we are done
+		return Exited
+	case '#':
+		// hit an obstacle, so turn right
+		nextStep = Step{gt.Here.Pos, TurnRight[gt.Here.Dir]}
+	default:
+		// valid move, keep in this direction
+		nextStep = Step{nextPos, gt.Here.Dir}
+	}
+
+	if gt.History[nextStep] {
 		// we've been here, in the same direction
-		whatHappened = Looped
+		result = Looped
 	} else {
 		// take the step
-		//debug.Debug("Moving to", nextStep)
-		g.Here = nextStep
-		g.History[g.Here] = true
-		whatHappened = Moved
+		gt.Here = nextStep
+		gt.History[gt.Here] = true
+		result = Moved
 	}
 	return
 }
 
-func StartMapMutator(startMap string, ch chan<- string) {
-	runes := []rune(startMap)
-	waitGroup := sync.WaitGroup{}
+func CountWaysToForceLoop(grid grids.Grid) (total int) {
+	results := make(chan bool)
+	trackerGroup := sync.WaitGroup{}
+	readerGroup := sync.WaitGroup{}
 
-	for i, char := range runes {
-		go func() {
-			waitGroup.Add(1)
-			if char == '.' {
-				newMap := append([]rune{}, runes[:i]...)
-				newMap = append(newMap, '#')
-				newMap = append(newMap, runes[i+1:]...)
-				ch <- string(newMap)
-			}
-			waitGroup.Done()
-		}()
-	}
+	// reader for results, counts into total
+	readerGroup.Add(1)
+	go func(in <-chan bool) {
+		defer readerGroup.Done()
+		// block until there is some data, then read until closed
+		for range in {
+			total++
+		}
+	}(results)
 
-	waitGroup.Wait()
-	close(ch)
-}
-
-func CountWaysToForceLoop(input string) (result int) {
-	maps := make(chan string)
-	results := make(chan WhatHappened)
-	numMaps := 0
-
-	go StartMapMutator(input, maps)
-	runtime.NumCPU()
-
-	// spin up lots of consumers
-	for mutated := range maps {
-		numMaps++
-		go func() {
-			results <- NewGuard(mutated).MoveUntilFinished()
-		}()
-	}
-	for range numMaps {
-		if <-results == Looped {
-			result++
+	// then spin up the workers
+	for row := 1; row < len(grid)-1; row++ {
+		for col := 1; col < len(grid[0])-1; col++ {
+			trackerGroup.Add(1)
+			go func(out chan<- bool) {
+				defer trackerGroup.Done()
+				tracker := NewGuardTrackerWithObstacle(grid, grids.Pos{Row: row, Col: col})
+				if tracker.MoveUntilFinished() == Looped {
+					out <- true
+				}
+			}(results)
 		}
 	}
+
+	trackerGroup.Wait()
+	close(results)
+	readerGroup.Wait()
 	return
 }

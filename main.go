@@ -8,6 +8,7 @@ import (
 	"github.com/tastapod/advent-2024/day4"
 	"github.com/tastapod/advent-2024/day5"
 	"github.com/tastapod/advent-2024/day6"
+	"github.com/tastapod/advent-2024/grids"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"time"
 )
@@ -95,10 +96,10 @@ func runDay5() {
 }
 
 func runDay6() {
-	input := parsing.ReadDay(6)
+	input := grids.PadGrid(parsing.ReadAndSplitDay(6), 1)
 
 	// part 1
-	guard := day6.NewGuard(input)
+	guard := day6.NewGuardTracker(input)
 	part1 := guard.CountAllPositions()
 	fmt.Printf("Day 6 part 1: total = %d\n", part1) // 4826
 
