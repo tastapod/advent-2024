@@ -61,3 +61,7 @@ Spoiler! The solution is 'dumber' than I realised. You can think of the page num
 This is weirdly algorithmic. I started with the body of a test and just kind of wrote the code in one hit. I was able to reuse the grid padding code from Day 4.
 
 As I was writing the code to take a step, the state machine just kind of fell into place. I had a couple of quirks that my tests and tracing quickly helped with (I forgot to replace the initial position with a '.', for instance!) but part 1 fell together fairly straightforwardly.
+
+Part 2 has a brute forcedness to it, so I feel there should be a more elegant way to e.g. leverage previous runs. But I couldn't reconcile the logic of storing previous loops in what would have been a different layout. My initial solution took ages to run (OK, less than 10 seconds, but that is still a LOT of AoC seconds). I spun up a swarm of [goroutines][] writing their answers to a channel and this brought the runtime down to around 1.3 seconds, which I am happy with. I also (re)learned a ton about synchronising goroutines and avoiding either race conditions or premature termination.
+
+[goroutines]: https://go.dev/doc/faq#goroutines
