@@ -7,9 +7,9 @@ import (
 )
 
 func ParseInput(input string) (rules, updates []string) {
-	parts := parsing.PartsWithSep(input, "\n\n")
-	rules = parsing.Parts(parts[0])
-	updates = parsing.Parts(parts[1])
+	parts := parsing.Parts(input, "\n\n")
+	rules = parsing.Lines(parts[0])
+	updates = parsing.Lines(parts[1])
 	return
 }
 

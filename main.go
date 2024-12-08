@@ -8,6 +8,7 @@ import (
 	"github.com/tastapod/advent-2024/day4"
 	"github.com/tastapod/advent-2024/day5"
 	"github.com/tastapod/advent-2024/day6"
+	"github.com/tastapod/advent-2024/day7"
 	"github.com/tastapod/advent-2024/grids"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"time"
@@ -20,6 +21,7 @@ func main() {
 	stopwatch(runDay4)
 	stopwatch(runDay5)
 	stopwatch(runDay6)
+	stopwatch(runDay7)
 }
 
 func stopwatch(fn func()) {
@@ -106,4 +108,12 @@ func runDay6() {
 	// part 2
 	part2 := day6.CountWaysToForceLoop(input)
 	fmt.Printf("Day 6 part 2: total = %d\n", part2) // 1721
+}
+
+func runDay7() {
+	input := parsing.ReadAndSplitDay(7)
+
+	// part 1
+	part1 := day7.SumValidEquations(input)
+	fmt.Printf("Day 7 part 1: total = %v\n", part1) // 10741443549536
 }

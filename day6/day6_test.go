@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var Part1Start = parsing.Parts(`
+var Part1Start = parsing.Lines(`
 ....#.....
 .........#
 ..........
