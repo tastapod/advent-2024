@@ -15,7 +15,7 @@ func TestFindsValidCombination(t *testing.T) {
 	puzzle := day7.NewPuzzle("190: 10 19")
 
 	// when
-	result := puzzle.Solve()
+	result := puzzle.Solve(day7.Plus, day7.Times)
 
 	// then
 	require.Equal(t, 1, len(result))
@@ -35,5 +35,9 @@ var Part1Input = parsing.Lines(`
 292: 11 6 16 20`)
 
 func TestAddsValidEquations(t *testing.T) {
-	assert.Equal(t, int64(3749), day7.SumValidEquations(Part1Input))
+	assert.Equal(t, int64(3749), day7.SumValidEquationsPart1(Part1Input))
+}
+
+func TestAddsValidEquationsWithConcot(t *testing.T) {
+	assert.Equal(t, int64(11387), day7.SumValidEquationsPart2(Part1Input))
 }

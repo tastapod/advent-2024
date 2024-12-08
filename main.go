@@ -114,6 +114,10 @@ func runDay7() {
 	input := parsing.ReadAndSplitDay(7)
 
 	// part 1
-	part1 := day7.SumValidEquations(input)
+	part1 := day7.SumValidEquationsPart1(input)
 	fmt.Printf("Day 7 part 1: total = %v\n", part1) // 10741443549536
+
+	// part 2
+	part2 := day7.SumValidEquationsPart2(input)
+	fmt.Printf("Day 7 part 2: total = %v\n", part2) // 500335179214836
 }

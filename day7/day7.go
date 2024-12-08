@@ -1,16 +1,17 @@
 package day7
 
 import (
-	"github.com/tastapod/advent-2024/internal/debug"
+	"fmt"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"strings"
 )
 
-type Operator rune
+type Operator string
 
 const (
-	Times Operator = '*'
-	Plus  Operator = '+'
+	Times  Operator = "*"
+	Plus   Operator = "+"
+	Concat Operator = "||"
 )
 
 type Result struct {
@@ -32,7 +33,7 @@ func NewPuzzle(input string) (p Puzzle) {
 	return
 }
 
-func (p *Puzzle) Solve() (results []Result) {
+func (p *Puzzle) Solve(operators ...Operator) (results []Result) {
 	var rec func(target, total int64, ops []Operator, tail []int64)
 
 	rec = func(target, total int64, ops []Operator, tail []int64) {
@@ -47,8 +48,8 @@ func (p *Puzzle) Solve() (results []Result) {
 			//debug.Debug("Ran out of values:", target, total, tail)
 			return
 		} else {
-			// recurse for both operators
-			for _, op := range []Operator{Plus, Times} {
+			// recurse for all operators
+			for _, op := range operators {
 				rec(target, Apply[op](total, tail[0]), append(ops, op), tail[1:])
 			}
 		}
@@ -65,16 +66,27 @@ var Apply = map[Operator]func(int64, int64) int64{
 	Times: func(l, r int64) int64 {
 		return l * r
 	},
+	Concat: func(l, r int64) int64 {
+		return parsing.Int64(fmt.Sprintf("%d%d", l, r))
+	},
 }
 
-func SumValidEquations(input []string) (total int64) {
-	debug.Debug("Checking", len(input), "lines")
+func sumValidEquations(input []string, operators ...Operator) (total int64) {
+	//debug.Debug("Checking", len(input), "lines")
 	for _, line := range input {
 		puzzle := NewPuzzle(line)
-		results := puzzle.Solve()
+		results := puzzle.Solve(operators...)
 		if len(results) > 0 {
 			total += results[0].Target
 		}
 	}
 	return
+}
+
+func SumValidEquationsPart1(input []string) int64 {
+	return sumValidEquations(input, Plus, Times)
+}
+
+func SumValidEquationsPart2(input []string) (total int64) {
+	return sumValidEquations(input, Plus, Times, Concat)
 }

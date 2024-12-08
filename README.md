@@ -65,3 +65,9 @@ As I was writing the code to take a step, the state machine just kind of fell in
 Part 2 has a brute forcedness to it, so I feel there should be a more elegant way to e.g. leverage previous runs. But I couldn't reconcile the logic of storing previous loops in what would have been a different layout. My initial solution took ages to run (OK, less than 10 seconds, but that is still a LOT of AoC seconds). I spun up a swarm of [goroutines][] writing their answers to a channel and this brought the runtime down to around 1.3 seconds, which I am happy with. I also (re)learned a ton about synchronising goroutines and avoiding either race conditions or premature termination.
 
 [goroutines]: https://go.dev/doc/faq#goroutines
+
+### Day 7
+
+This was straightforward TDD of a solution which worked in the tests but failed with the main input. It turned out I was being too conservative with terminating my recursion. I thought it was a number overflow so I converted all the `int64` maths to `big.Int`, nad still had the same result.
+
+The good news is that I now know about the `big` package (and to use `big.NewInt` to create a new value to put the results of calculations in!). The bad news is that the whole thing worked anyway with `int64` without my stupid bug! Still, part 2 took about an additional 2 minutes due to how I solved part 1.
