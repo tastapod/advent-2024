@@ -14,11 +14,6 @@ const (
 	Concat Operator = "||"
 )
 
-type Result struct {
-	Target    int64
-	Operators []Operator
-}
-
 type Puzzle struct {
 	Target int64
 	Values []int64
@@ -33,17 +28,19 @@ func NewPuzzle(input string) (p Puzzle) {
 	return
 }
 
-func (p *Puzzle) Solve(operators ...Operator) (results []Result) {
+func (p *Puzzle) Solve(operators ...Operator) (result int64) {
 	var rec func(target, total int64, ops []Operator, tail []int64)
 
 	rec = func(target, total int64, ops []Operator, tail []int64) {
 		switch {
+		case result > 0:
+			// another branch succeeded so short-circuit
 		case total > target:
-			// overshot
+			// overshot so fail
 		case len(tail) == 0:
 			if total == target {
 				// exact result!
-				results = append(results, Result{Target: target, Operators: ops})
+				result = target
 			}
 		default:
 			// try all operators with remaining values
@@ -54,6 +51,7 @@ func (p *Puzzle) Solve(operators ...Operator) (results []Result) {
 	}
 
 	rec(p.Target, p.Values[0], nil, p.Values[1:])
+
 	return
 }
 
@@ -73,9 +71,9 @@ func sumValidEquations(input []string, operators ...Operator) (total int64) {
 	//debug.Debug("Checking", len(input), "lines")
 	for _, line := range input {
 		puzzle := NewPuzzle(line)
-		results := puzzle.Solve(operators...)
-		if len(results) > 0 {
-			total += results[0].Target
+
+		if result := puzzle.Solve(operators...); result > 0 {
+			total += result
 		}
 	}
 	return
