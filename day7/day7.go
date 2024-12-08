@@ -37,18 +37,16 @@ func (p *Puzzle) Solve(operators ...Operator) (results []Result) {
 	var rec func(target, total int64, ops []Operator, tail []int64)
 
 	rec = func(target, total int64, ops []Operator, tail []int64) {
-		//debug.Debug("rec", target, total, ops, tail)
-		noneLeft := len(tail) == 0
-		if total == target && noneLeft {
-			// exact result!
-			//debug.Debug("Found exact result", total)
-			results = append(results, Result{Target: target, Operators: ops})
-		} else if noneLeft {
-			// ran out of values
-			//debug.Debug("Ran out of values:", target, total, tail)
-			return
-		} else {
-			// recurse for all operators
+		switch {
+		case total > target:
+			// overshot
+		case len(tail) == 0:
+			if total == target {
+				// exact result!
+				results = append(results, Result{Target: target, Operators: ops})
+			}
+		default:
+			// try all operators with remaining values
 			for _, op := range operators {
 				rec(target, Apply[op](total, tail[0]), append(ops, op), tail[1:])
 			}

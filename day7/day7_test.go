@@ -38,6 +38,6 @@ func TestAddsValidEquations(t *testing.T) {
 	assert.Equal(t, int64(3749), day7.SumValidEquationsPart1(Part1Input))
 }
 
-func TestAddsValidEquationsWithConcot(t *testing.T) {
+func TestAddsValidEquationsWithConcat(t *testing.T) {
 	assert.Equal(t, int64(11387), day7.SumValidEquationsPart2(Part1Input))
 }
