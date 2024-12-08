@@ -3,7 +3,6 @@ package day7
 import (
 	"github.com/tastapod/advent-2024/internal/debug"
 	"github.com/tastapod/advent-2024/internal/parsing"
-	"math/big"
 	"strings"
 )
 
@@ -15,31 +14,31 @@ const (
 )
 
 type Result struct {
-	Target    *big.Int
+	Target    int64
 	Operators []Operator
 }
 
 type Puzzle struct {
-	Target *big.Int
-	Values []*big.Int
+	Target int64
+	Values []int64
 }
 
 func NewPuzzle(input string) (p Puzzle) {
 	parts := strings.Split(input, ": ")
 	p = Puzzle{
-		Target: parsing.BigInt(parts[0]),
-		Values: parsing.BigInts(parts[1]),
+		Target: parsing.Int64(parts[0]),
+		Values: parsing.Int64s(parts[1]),
 	}
 	return
 }
 
 func (p *Puzzle) Solve() (results []Result) {
-	var rec func(target, total *big.Int, ops []Operator, tail []*big.Int)
+	var rec func(target, total int64, ops []Operator, tail []int64)
 
-	rec = func(target, total *big.Int, ops []Operator, tail []*big.Int) {
+	rec = func(target, total int64, ops []Operator, tail []int64) {
 		//debug.Debug("rec", target, total, ops, tail)
 		noneLeft := len(tail) == 0
-		if total.Cmp(target) == 0 && noneLeft {
+		if total == target && noneLeft {
 			// exact result!
 			//debug.Debug("Found exact result", total)
 			results = append(results, Result{Target: target, Operators: ops})
@@ -59,24 +58,22 @@ func (p *Puzzle) Solve() (results []Result) {
 	return
 }
 
-var Apply = map[Operator]func(*big.Int, *big.Int) *big.Int{
-	Plus: func(l, r *big.Int) *big.Int {
-		return big.NewInt(0).Add(l, r)
+var Apply = map[Operator]func(int64, int64) int64{
+	Plus: func(l, r int64) int64 {
+		return l + r
 	},
-	Times: func(l, r *big.Int) *big.Int {
-		return big.NewInt(0).Mul(l, r)
+	Times: func(l, r int64) int64 {
+		return l * r
 	},
 }
 
-func SumValidEquations(input []string) (total *big.Int) {
-	//debug.Debug(total)
-	total = big.NewInt(0)
+func SumValidEquations(input []string) (total int64) {
 	debug.Debug("Checking", len(input), "lines")
 	for _, line := range input {
 		puzzle := NewPuzzle(line)
 		results := puzzle.Solve()
 		if len(results) > 0 {
-			total.Add(total, results[0].Target)
+			total += results[0].Target
 		}
 	}
 	return

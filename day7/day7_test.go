@@ -5,7 +5,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tastapod/advent-2024/day7"
 	"github.com/tastapod/advent-2024/internal/parsing"
-	"math/big"
 	"testing"
 )
 
@@ -21,7 +20,7 @@ func TestFindsValidCombination(t *testing.T) {
 	// then
 	require.Equal(t, 1, len(result))
 	assert.Equal(day7.Times, result[0].Operators[0])
-	assert.Equal(big.NewInt(190), result[0].Target)
+	assert.Equal(int64(190), result[0].Target)
 }
 
 var Part1Input = parsing.Lines(`
@@ -36,5 +35,5 @@ var Part1Input = parsing.Lines(`
 292: 11 6 16 20`)
 
 func TestAddsValidEquations(t *testing.T) {
-	assert.Equal(t, big.NewInt(3749), day7.SumValidEquations(Part1Input))
+	assert.Equal(t, int64(3749), day7.SumValidEquations(Part1Input))
 }
