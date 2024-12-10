@@ -2,7 +2,7 @@ package day4
 
 import "github.com/tastapod/advent-2024/grids"
 
-func HasWord(word string, grid grids.Grid, delta grids.Delta, pos grids.Position) bool {
+func HasWord(word string, grid grids.Grid, offset grids.Offset, pos grids.Position) bool {
 	var FindRest func(rest []rune, pos grids.Position) bool
 
 	FindRest = func(rest []rune, pos grids.Position) bool {
@@ -11,7 +11,7 @@ func HasWord(word string, grid grids.Grid, delta grids.Delta, pos grids.Position
 		} else if grid[pos.Row][pos.Col] != rest[0] {
 			return false
 		} else {
-			return FindRest(rest[1:], pos.Move(delta))
+			return FindRest(rest[1:], pos.Plus(offset))
 		}
 	}
 
@@ -36,7 +36,7 @@ func countWordsAroundPosition(word string, grid grids.Grid, pos grids.Position) 
 	// check all directions
 	for _, dRow := range []int{-1, 0, 1} {
 		for _, dCol := range []int{-1, 0, 1} {
-			if HasWord(word, grid, grids.Delta{DRow: dRow, DCol: dCol}, pos) {
+			if HasWord(word, grid, grids.Offset{DRow: dRow, DCol: dCol}, pos) {
 				result++
 			}
 		}

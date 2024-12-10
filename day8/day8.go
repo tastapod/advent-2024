@@ -2,6 +2,7 @@ package day8
 
 import (
 	"github.com/tastapod/advent-2024/grids"
+	"sync"
 )
 
 type Size struct {
@@ -13,14 +14,17 @@ type Pair[T comparable] struct {
 	L, R T
 }
 
-func CalculateAntinodes(antennae Pair[grids.Position], size Size) (result []grids.Position) {
-	delta := antennae.L.Minus(antennae.R)
-	for _, antinode := range []grids.Position{antennae.L.Move(delta), antennae.R.Unmove(delta)} {
-		if isInRange(antinode.Row, 0, size.NumRows) && isInRange(antinode.Col, 0, size.NumCols) {
-			result = append(result, antinode)
+func EmitNearestAntinodes(antennae Pair[grids.Position], size Size, out chan<- grids.Position) {
+	offset := grids.OffsetFrom(antennae.L, antennae.R)
+	for _, antinode := range []grids.Position{antennae.L.Minus(offset), antennae.L.Plus(offset.Times(2))} {
+		if isInGrid(antinode, size) {
+			out <- antinode
 		}
 	}
-	return
+}
+
+func isInGrid(pos grids.Position, size Size) bool {
+	return isInRange(pos.Row, 0, size.NumRows) && isInRange(pos.Col, 0, size.NumCols)
 }
 
 func isInRange(val, low, high int) bool {
@@ -49,22 +53,54 @@ func CollectAntennae(input []string) (result map[rune][]grids.Position) {
 	return
 }
 
-func CountAntinodes(input []string) int {
-	// given
-	antennae := CollectAntennae(input)
+func CountNearestAntinodes(input []string) int {
+	return countAntinodes(input, EmitNearestAntinodes)
+
+}
+
+func countAntinodes(input []string, emitAntinodes func(antennae Pair[grids.Position], size Size, out chan<- grids.Position)) int {
+	antennaMap := CollectAntennae(input)
 	size := Size{NumRows: len(input), NumCols: len(input[0])}
 	antinodes := make(map[grids.Position]bool)
 
-	for _, positions := range antennae {
-		combinations := Combinations(positions)
+	positions := make(chan grids.Position)
+	waitGroup := sync.WaitGroup{}
+
+	for _, antennae := range antennaMap {
+		combinations := Combinations(antennae)
 		for _, pair := range combinations {
-			for _, antinode := range CalculateAntinodes(pair, size) {
-				if antinodes[antinode] {
-				}
-				antinodes[antinode] = true
-			}
+			waitGroup.Add(1)
+			go func(out chan<- grids.Position) {
+				defer waitGroup.Done()
+				emitAntinodes(pair, size, positions)
+			}(positions)
 		}
 	}
 
+	go func(out chan<- grids.Position) {
+		waitGroup.Wait()
+		close(positions)
+	}(positions)
+
+	for antinode := range positions {
+		antinodes[antinode] = true
+	}
+
 	return len(antinodes)
+}
+
+func CountAllAntinodes(input []string) int {
+	return countAntinodes(input, EmitAllAntinodes)
+}
+
+func EmitAllAntinodes(antennae Pair[grids.Position], size Size, out chan<- grids.Position) {
+	offset := grids.OffsetFrom(antennae.L, antennae.R)
+
+	for antinode := antennae.L; isInGrid(antinode, size); antinode = antinode.Plus(offset) {
+		out <- antinode
+	}
+
+	for antinode := antennae.L.Minus(offset); isInGrid(antinode, size); antinode = antinode.Minus(offset) {
+		out <- antinode
+	}
 }

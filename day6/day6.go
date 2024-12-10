@@ -76,7 +76,7 @@ const (
 // Move moves the guard if possible and returns true, otherwise returns false
 func (gt *GuardTracker) Move() (result WhatHappened) {
 	var nextStep Step
-	var nextPos = gt.Here.Move(grids.Moves[gt.Here.Dir])
+	var nextPos = gt.Here.Plus(grids.Moves[gt.Here.Dir])
 
 	var contents rune
 	if nextPos == gt.Obstacle {

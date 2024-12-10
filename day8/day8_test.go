@@ -16,12 +16,24 @@ func TestCalculatesAntinodes(t *testing.T) {
 	}
 
 	// when
-	antinodes := day8.CalculateAntinodes(antennae, day8.Size{NumRows: 10, NumCols: 10})
+	antinodes := antinodes(antennae, day8.Size{NumRows: 10, NumCols: 10})
 
 	// then
 	assert.Equal(t, 2, len(antinodes))
 	assert.Contains(t, antinodes, grids.Position{Row: 1, Col: 3})
 	assert.Contains(t, antinodes, grids.Position{Row: 7, Col: 6})
+}
+
+func antinodes(antennae day8.Pair[grids.Position], size day8.Size) []grids.Position {
+	ch := make(chan grids.Position, 2)
+	day8.EmitNearestAntinodes(antennae, size, ch)
+	close(ch)
+	var antinodes []grids.Position
+
+	for antinode := range ch {
+		antinodes = append(antinodes, antinode)
+	}
+	return antinodes
 }
 
 func TestIgnoresAntinodesOutsideOfGrid(t *testing.T) {
@@ -32,7 +44,7 @@ func TestIgnoresAntinodesOutsideOfGrid(t *testing.T) {
 	}
 
 	// when
-	antinodes := day8.CalculateAntinodes(antennae, day8.Size{NumRows: 10, NumCols: 10})
+	antinodes := antinodes(antennae, day8.Size{NumRows: 10, NumCols: 10})
 
 	// then
 	assert.Equal(t, 1, len(antinodes))
@@ -80,10 +92,12 @@ func TestCollectsDifferentTypesOfAntenna(t *testing.T) {
 	assert.Contains(t, antennae['A'], grids.Position{Row: 9, Col: 9})
 }
 
-func TestCountsPositionsOfAntinodes(t *testing.T) {
-	assert.Equal(t, 14, day8.CountAntinodes(Input))
+func TestCountsPositionsOfNearestAntinodes(t *testing.T) {
+	assert.Equal(t, 14, day8.CountNearestAntinodes(Input))
 
 }
 
-// Next:
-// - [ ] Collect all antinode positions for input
+func TestCountsPositionsOfAllAntinodes(t *testing.T) {
+	assert.Equal(t, 34, day8.CountAllAntinodes(Input))
+
+}

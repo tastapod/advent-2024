@@ -16,7 +16,7 @@ func TestFindsWordForwards(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		grids.Delta{DRow: 0, DCol: +1},
+		grids.Offset{DRow: 0, DCol: +1},
 		grids.Position{Row: 0, Col: 2},
 	))
 }
@@ -29,7 +29,7 @@ func TestFindsWordBackwards(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		grids.Delta{DRow: 0, DCol: -1},
+		grids.Offset{DRow: 0, DCol: -1},
 		grids.Position{Row: 0, Col: 5},
 	))
 }
@@ -47,7 +47,7 @@ func TestFindsWordDown(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		grids.Delta{DRow: +1, DCol: 0},
+		grids.Offset{DRow: +1, DCol: 0},
 		grids.Position{Row: 0, Col: 4},
 	))
 }
@@ -65,7 +65,7 @@ func TestFindsWordUpRight(t *testing.T) {
 	assert.Equal(t, true, day4.HasWord(
 		"XMAS",
 		grid,
-		grids.Delta{DRow: -1, DCol: +1},
+		grids.Offset{DRow: -1, DCol: +1},
 		grids.Position{Row: 3, Col: 2},
 	))
 }

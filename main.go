@@ -128,6 +128,10 @@ func runDay8() {
 	input := parsing.ReadAndSplitDay(8)
 
 	// part 1
-	part1 := day8.CountAntinodes(input)
+	part1 := day8.CountNearestAntinodes(input)
 	fmt.Printf("Day 8 part 1: total = %d\n", part1) // 327
+
+	// part 1
+	part2 := day8.CountAllAntinodes(input)
+	fmt.Printf("Day 8 part 2: total = %d\n", part2) // 327
 }

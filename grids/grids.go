@@ -24,29 +24,40 @@ func PadGrid(lines []string, pad int) (result Grid) {
 	return
 }
 
+func (g *Grid) At(p Position) rune {
+	return (*g)[p.Row][p.Col]
+}
+
 type Position struct {
 	Row int
 	Col int
 }
 
-func (p Position) Move(delta Delta) Position {
-	return Position{Row: p.Row + delta.DRow, Col: p.Col + delta.DCol}
+type Offset struct {
+	DRow int
+	DCol int
 }
 
-func (p Position) Unmove(delta Delta) Position {
-	return Position{Row: p.Row - delta.DRow, Col: p.Col - delta.DCol}
-}
-
-func (p Position) Minus(other Position) Delta {
-	return Delta{
-		DRow: p.Row - other.Row,
-		DCol: p.Col - other.Col,
+func (d Offset) Times(n int) Offset {
+	return Offset{
+		DRow: n * d.DRow,
+		DCol: n * d.DCol,
 	}
 }
 
-type Delta struct {
-	DRow int
-	DCol int
+func OffsetFrom(p1, p2 Position) Offset {
+	return Offset{
+		DRow: p2.Row - p1.Row,
+		DCol: p2.Col - p1.Col,
+	}
+}
+
+func (p Position) Plus(offset Offset) Position {
+	return Position{Row: p.Row + offset.DRow, Col: p.Col + offset.DCol}
+}
+
+func (p Position) Minus(offset Offset) Position {
+	return Position{Row: p.Row - offset.DRow, Col: p.Col - offset.DCol}
 }
 
 type Dir rune
@@ -58,7 +69,7 @@ const (
 	Right     = '>'
 )
 
-var Moves = []Delta{
+var Moves = []Offset{
 	Up:    {DRow: -1, DCol: +0},
 	Down:  {DRow: +1, DCol: +0},
 	Left:  {DRow: +0, DCol: -1},
