@@ -71,3 +71,7 @@ Part 2 has a brute forcedness to it, so I feel there should be a more elegant wa
 This was straightforward TDD of a solution which worked in the tests but failed with the main input. It turned out I was being too conservative with terminating my recursion. I thought it was a number overflow so I converted all the `int64` maths to `big.Int`, nad still had the same result.
 
 The good news is that I now know about the `big` package (and to use `big.NewInt` to create a new value to put the results of calculations in!). The bad news is that the whole thing worked anyway with `int64` without my stupid bug! Still, part 2 took about an additional 2 minutes due to how I solved part 1.
+
+### Day 8
+
+This was another by-the-numbers exercise. I had a typo in the one line of code I didn't TDD! (A `<=` instead of a `<`, rookie error.) I converted part 2 to use channels. Next time I'm going to try to use an `iter.Seq` generator/yield function.
