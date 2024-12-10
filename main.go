@@ -9,6 +9,7 @@ import (
 	"github.com/tastapod/advent-2024/day5"
 	"github.com/tastapod/advent-2024/day6"
 	"github.com/tastapod/advent-2024/day7"
+	"github.com/tastapod/advent-2024/day8"
 	"github.com/tastapod/advent-2024/grids"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"time"
@@ -16,12 +17,13 @@ import (
 
 func main() {
 	stopwatch(runDay1)
-	stopwatch(runDay3)
 	stopwatch(runDay2)
+	stopwatch(runDay3)
 	stopwatch(runDay4)
 	stopwatch(runDay5)
 	stopwatch(runDay6)
 	stopwatch(runDay7)
+	stopwatch(runDay8)
 }
 
 func stopwatch(fn func()) {
@@ -115,9 +117,17 @@ func runDay7() {
 
 	// part 1
 	part1 := day7.SumValidEquationsPart1(input)
-	fmt.Printf("Day 7 part 1: total = %v\n", part1) // 10741443549536
+	fmt.Printf("Day 7 part 1: total = %d\n", part1) // 10741443549536
 
 	// part 2
 	part2 := day7.SumValidEquationsPart2(input)
-	fmt.Printf("Day 7 part 2: total = %v\n", part2) // 500335179214836
+	fmt.Printf("Day 7 part 2: total = %d\n", part2) // 500335179214836
+}
+
+func runDay8() {
+	input := parsing.ReadAndSplitDay(8)
+
+	// part 1
+	part1 := day8.CountAntinodes(input)
+	fmt.Printf("Day 8 part 1: total = %d\n", part1) // 327
 }

@@ -24,13 +24,24 @@ func PadGrid(lines []string, pad int) (result Grid) {
 	return
 }
 
-type Pos struct {
+type Position struct {
 	Row int
 	Col int
 }
 
-func (p Pos) Move(delta Delta) Pos {
-	return Pos{Row: p.Row + delta.DRow, Col: p.Col + delta.DCol}
+func (p Position) Move(delta Delta) Position {
+	return Position{Row: p.Row + delta.DRow, Col: p.Col + delta.DCol}
+}
+
+func (p Position) Unmove(delta Delta) Position {
+	return Position{Row: p.Row - delta.DRow, Col: p.Col - delta.DCol}
+}
+
+func (p Position) Minus(other Position) Delta {
+	return Delta{
+		DRow: p.Row - other.Row,
+		DCol: p.Col - other.Col,
+	}
 }
 
 type Delta struct {

@@ -17,7 +17,7 @@ func TestFindsWordForwards(t *testing.T) {
 		"XMAS",
 		grid,
 		grids.Delta{DRow: 0, DCol: +1},
-		grids.Pos{Row: 0, Col: 2},
+		grids.Position{Row: 0, Col: 2},
 	))
 }
 
@@ -30,7 +30,7 @@ func TestFindsWordBackwards(t *testing.T) {
 		"XMAS",
 		grid,
 		grids.Delta{DRow: 0, DCol: -1},
-		grids.Pos{Row: 0, Col: 5},
+		grids.Position{Row: 0, Col: 5},
 	))
 }
 
@@ -48,7 +48,7 @@ func TestFindsWordDown(t *testing.T) {
 		"XMAS",
 		grid,
 		grids.Delta{DRow: +1, DCol: 0},
-		grids.Pos{Row: 0, Col: 4},
+		grids.Position{Row: 0, Col: 4},
 	))
 }
 
@@ -66,7 +66,7 @@ func TestFindsWordUpRight(t *testing.T) {
 		"XMAS",
 		grid,
 		grids.Delta{DRow: -1, DCol: +1},
-		grids.Pos{Row: 3, Col: 2},
+		grids.Position{Row: 3, Col: 2},
 	))
 }
 
@@ -118,7 +118,7 @@ func TestFindsCrossMAS(t *testing.T) {
 	}
 
 	// then
-	assert.True(t, day4.HasCrossMAS(grid, grids.Pos{Row: 1, Col: 2}))
+	assert.True(t, day4.HasCrossMAS(grid, grids.Position{Row: 1, Col: 2}))
 }
 
 func TestCountsAllCrossMASs(t *testing.T) {

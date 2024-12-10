@@ -2,10 +2,10 @@ package day4
 
 import "github.com/tastapod/advent-2024/grids"
 
-func HasWord(word string, grid grids.Grid, delta grids.Delta, pos grids.Pos) bool {
-	var FindRest func(rest []rune, pos grids.Pos) bool
+func HasWord(word string, grid grids.Grid, delta grids.Delta, pos grids.Position) bool {
+	var FindRest func(rest []rune, pos grids.Position) bool
 
-	FindRest = func(rest []rune, pos grids.Pos) bool {
+	FindRest = func(rest []rune, pos grids.Position) bool {
 		if len(rest) == 0 {
 			return true
 		} else if grid[pos.Row][pos.Col] != rest[0] {
@@ -25,14 +25,14 @@ func CountWords(word string, source []string) (result int) {
 
 	for row := range len(source) {
 		for col := range len(source[0]) {
-			pos := grids.Pos{Row: row + pad, Col: col + pad}
+			pos := grids.Position{Row: row + pad, Col: col + pad}
 			result += countWordsAroundPosition(word, grid, pos)
 		}
 	}
 	return
 }
 
-func countWordsAroundPosition(word string, grid grids.Grid, pos grids.Pos) (result int) {
+func countWordsAroundPosition(word string, grid grids.Grid, pos grids.Position) (result int) {
 	// check all directions
 	for _, dRow := range []int{-1, 0, 1} {
 		for _, dCol := range []int{-1, 0, 1} {
@@ -44,7 +44,7 @@ func countWordsAroundPosition(word string, grid grids.Grid, pos grids.Pos) (resu
 	return
 }
 
-func HasCrossMAS(grid grids.Grid, pos grids.Pos) bool {
+func HasCrossMAS(grid grids.Grid, pos grids.Position) bool {
 	return isMAS(grid[pos.Row-1][pos.Col-1], grid[pos.Row][pos.Col], grid[pos.Row+1][pos.Col+1]) &&
 		isMAS(grid[pos.Row-1][pos.Col+1], grid[pos.Row][pos.Col], grid[pos.Row+1][pos.Col-1])
 }
@@ -59,7 +59,7 @@ func CountCrossMAS(source []string) (result int) {
 
 	for row := range len(source) {
 		for col := range len(source[0]) {
-			if HasCrossMAS(grid, grids.Pos{Row: row + pad, Col: col + pad}) {
+			if HasCrossMAS(grid, grids.Position{Row: row + pad, Col: col + pad}) {
 				result++
 			}
 		}
