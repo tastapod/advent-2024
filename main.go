@@ -10,6 +10,7 @@ import (
 	"github.com/tastapod/advent-2024/day6"
 	"github.com/tastapod/advent-2024/day7"
 	"github.com/tastapod/advent-2024/day8"
+	"github.com/tastapod/advent-2024/day9"
 	"github.com/tastapod/advent-2024/grids"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"time"
@@ -24,6 +25,7 @@ func main() {
 	stopwatch(runDay6)
 	stopwatch(runDay7)
 	stopwatch(runDay8)
+	stopwatch(runDay9)
 }
 
 func stopwatch(fn func()) {
@@ -134,4 +136,14 @@ func runDay8() {
 	// part 1
 	part2 := day8.CountAllAntinodes(input)
 	fmt.Printf("Day 8 part 2: total = %d\n", part2) // 327
+}
+
+func runDay9() {
+	input := parsing.ReadDay(9)
+	var dm day9.DiskMap
+
+	// part 1
+	dm = day9.NewDiskMap(input)
+	part1 := dm.DefragWholeDisk().Checksum()
+	fmt.Printf("Day 9 part 1: checksum = %d\n", part1) // 6307275788409
 }

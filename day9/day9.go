@@ -70,14 +70,42 @@ func (dm *DiskMap) NextId() (id int) {
 	return
 }
 
-// DefragLastFile moves the hindmost file into the first space and returns `true` if anything changed
+// DefragLastFile moves the rightmost file into the first space and returns `true` if anything changed
 func (dm *DiskMap) DefragLastFile() bool {
-	_, file := dm.LastFile()
-	spacePos, space := dm.FirstSpace()
+	return dm.DefragFile(dm.LastFile(), dm.FirstSpace())
+}
 
+// DefragLastWholeFile moves the rightmost file that can move wholesale into the first space that can hold it
+// otherwise it returns false
+func (dm *DiskMap) DefragLastWholeFile() bool {
+	for filePos, entry := range slices.Backward(dm.Entries) {
+		if entry.IsFile() {
+			// find first space big enough
+			if spacePos := slices.IndexFunc(dm.Entries, func(space DiskEntry) bool {
+				return space.IsSpace() && space.Length >= entry.Length && space.Start < entry.Start
+			}); spacePos != -1 {
+				// found one!
+				return dm.DefragFile(filePos, spacePos)
+			}
+		}
+	}
+
+	// none found
+	return false
+}
+
+func (dm *DiskMap) DefragFile(filePos int, spacePos int) bool {
 	// are we done?
-	if file == nil || space == nil || space.Start > file.Start {
-		// first space is beyond the last file!
+	if filePos == -1 || spacePos == -1 {
+		// all finished
+		return false
+	}
+
+	file := &dm.Entries[filePos]
+	space := &dm.Entries[spacePos]
+
+	if space.Start > file.Start {
+		// first space is after last file
 		return false
 	}
 
@@ -98,39 +126,49 @@ func (dm *DiskMap) DefragLastFile() bool {
 
 	// file is shorter
 	default:
-		// replace space with file+space
-		dm.Entries = slices.Replace(dm.Entries, spacePos, spacePos+1,
-			DiskEntry{Id: file.Id, Start: space.Start, Length: file.Length},
-			DiskEntry{Id: -1, Start: space.Start + file.Length, Length: space.Length - file.Length},
-		)
-		// blank file at end (NOTE: file no longer points to the correct entry!)
-		_, file = dm.LastFile()
+		// insert file before space and shorten the space
+		movedFile := DiskEntry{Id: file.Id, Start: space.Start, Length: file.Length}
+		dm.Entries = slices.Insert(dm.Entries, spacePos, movedFile)
+
+		// file and space positions have moved
+		filePos++
+		file = &dm.Entries[filePos]
+
+		spacePos++
+		space = &dm.Entries[spacePos]
+
+		// shrink space
+		space.Start += movedFile.Length
+		space.Length -= movedFile.Length
+
+		// blank out original file
 		file.Id = -1
 	}
 	return true
 }
 
-func (dm *DiskMap) LastFile() (int, *DiskEntry) {
+func (dm *DiskMap) LastFile() int {
 	for i := len(dm.Entries) - 1; i >= 0; i-- {
 		entry := &dm.Entries[i]
 		if entry.IsFile() {
-			return i, entry
+			return i
 		}
 	}
-	return -1, nil
+	return -1
 }
 
-func (dm *DiskMap) FirstSpace() (int, *DiskEntry) {
+func (dm *DiskMap) FirstSpace() int {
 	found := slices.IndexFunc(dm.Entries, func(e DiskEntry) bool { return e.IsSpace() && e.Length > 0 })
 	if found == -1 {
-		return -1, nil
+		return -1
 	}
-	return found, &dm.Entries[found]
+	return found
 }
 
-func (dm *DiskMap) DefragWholeDisk() {
+func (dm *DiskMap) DefragWholeDisk() *DiskMap {
 	for dm.DefragLastFile() {
 	}
+	return dm
 }
 
 func (dm *DiskMap) String() string {
@@ -153,4 +191,27 @@ func (dm *DiskMap) Checksum() (result int) {
 		result += e.Checksum()
 	}
 	return
+}
+
+func (dm *DiskMap) Compact() {
+	compacted := make([]DiskEntry, 0)
+
+	for i := 0; i < len(dm.Entries); i++ {
+		e := dm.Entries[i]
+		if e.IsSpace() {
+			for j := i + 1; j < len(dm.Entries) && e.Id == dm.Entries[j].Id; j++ {
+				e.Length += dm.Entries[j].Length
+				i++
+			}
+		}
+		compacted = append(compacted, e)
+	}
+	dm.Entries = compacted
+}
+
+func (dm *DiskMap) DefragWholeDiskWithWholeFiles() *DiskMap {
+	for dm.DefragLastWholeFile() {
+		dm.Compact()
+	}
+	return dm
 }
