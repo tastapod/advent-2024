@@ -2,7 +2,6 @@ package parsing
 
 import (
 	"fmt"
-	"math/big"
 	"os"
 	"strconv"
 	"strings"
@@ -10,11 +9,13 @@ import (
 
 // ReadDay reads a file called `input.txt` from the given day's source directory
 func ReadDay(day int) string {
-	dayFile := fmt.Sprintf("day%d/input.txt", day)
+	return TrimFile(fmt.Sprintf("day%d/input.txt", day))
+}
 
-	content, err := os.ReadFile(dayFile)
+func TrimFile(file string) string {
+	content, err := os.ReadFile(file)
 	if err != nil {
-		panic(fmt.Sprintf("%s: error %s", dayFile, err))
+		panic(fmt.Sprintf("%s: error %s", file, err))
 	}
 	return strings.TrimSpace(string(content))
 }
@@ -52,17 +53,6 @@ func Ints(input string) (result []int) {
 	return
 }
 
-// IntsWithSep splits a string on a separator and converts the parts to ints
-func IntsWithSep(input, sep string) (result []int) {
-	parts := Parts(input, sep)
-	result = make([]int, len(parts))
-
-	for i, part := range parts {
-		result[i] = Int(part)
-	}
-	return
-}
-
 // Int64 is a convenience method to convert a string to int64 ignoring errors
 func Int64(value string) int64 {
 	result, err := strconv.ParseInt(value, 10, 64)
@@ -80,23 +70,6 @@ func Int64s(input string) (result []int64) {
 
 	for i, val := range fields {
 		result[i] = Int64(val)
-	}
-	return
-}
-
-func BigInt(value string) *big.Int {
-	result, ok := big.NewInt(0).SetString(value, 10)
-	if !ok {
-		panic(fmt.Sprintf("error %s", value))
-	}
-	return result
-}
-
-func BigInts(values string) (result []*big.Int) {
-	fields := strings.Fields(values)
-	result = make([]*big.Int, len(fields))
-	for i, field := range fields {
-		result[i] = BigInt(field)
 	}
 	return
 }

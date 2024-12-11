@@ -75,3 +75,13 @@ The good news is that I now know about the `big` package (and to use `big.NewInt
 ### Day 8
 
 This was another by-the-numbers exercise. I had a typo in the one line of code I didn't TDD! (A `<=` instead of a `<`, rookie error.) I converted part 2 to use channels. Next time I'm going to try to use an `iter.Seq` generator/yield function.
+
+### Day 9
+
+This one went round the houses. I initially started with a doubly-linked list, figuring I would be inserting, slicing, chopping, etc. This led me down the rabbit hole of Go 1.23 `iter.Seq` and `slices`, reading this [fantastic article][go-seq], and starting to mess with `list.List`, which predates generics, so the entries have an `any` value hanging off them.
+
+In the end I backed out all of this yak-shaving and went with an array of disk entries which worked out fine. I had a small gotcha with pointers to entries going wonky if you change the underlying array (thanks, `slices.Replace`!), but luckily my tests caught me.
+
+This is the first day when I have written a `String()` method to show the working contents.
+
+[go-seq]: https://go.dev/blog/range-functions
