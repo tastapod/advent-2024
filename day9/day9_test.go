@@ -102,8 +102,7 @@ func TestDefragsShortFile(t *testing.T) {
 	assert.Equal(t, []day9.DiskEntry{
 		{0, 0, 1},
 		{1, 1, 2},
-		{-1, 3, 3},
-		{-1, 6, 2},
+		{-1, 3, 5},
 	}, dm.Entries)
 }
 
@@ -156,49 +155,72 @@ func TestCalculatesChecksumForPart1(t *testing.T) {
 	assert.Equal(t, 6307275788409, dm.Checksum())
 }
 
-func TestCompactsSpace(t *testing.T) {
+func TestMergesThreeSpaces(t *testing.T) {
 	// given
 	dm := day9.DiskMap{
 		Entries: []day9.DiskEntry{
 			{Id: 0, Start: 0, Length: 4},
 			{Id: -1, Start: 4, Length: 3},
 			{Id: -1, Start: 7, Length: 2},
-			{Id: 1, Start: 9, Length: 1},
+			{Id: -1, Start: 9, Length: 1},
+			{Id: 1, Start: 10, Length: 1},
 		}}
 
 	// when
-	dm.Compact()
+	dm.MergeSpaces(2)
+
+	// then
+	assert.Equal(t, []day9.DiskEntry{
+		{Id: 0, Start: 0, Length: 4},
+		{Id: -1, Start: 4, Length: 6},
+		{Id: 1, Start: 10, Length: 1},
+	}, dm.Entries)
+}
+
+func TestMergesPreviousAndCurrentSpace(t *testing.T) {
+	// given
+	dm := day9.DiskMap{
+		Entries: []day9.DiskEntry{
+			{Id: 0, Start: 0, Length: 4},
+			{Id: -1, Start: 4, Length: 3},
+			{Id: -1, Start: 7, Length: 2},
+		}}
+
+	// when
+	dm.MergeSpaces(2)
 
 	// then
 	assert.Equal(t, []day9.DiskEntry{
 		{Id: 0, Start: 0, Length: 4},
 		{Id: -1, Start: 4, Length: 5},
-		{Id: 1, Start: 9, Length: 1},
 	}, dm.Entries)
 }
 
-func TestMovesFurthestFileIntoAvailableSpace(t *testing.T) {
+func TestMergesCurrentAndNextSpace(t *testing.T) {
+	// given
+	dm := day9.DiskMap{
+		Entries: []day9.DiskEntry{
+			{Id: 0, Start: 0, Length: 4},
+			{Id: -1, Start: 4, Length: 3},
+			{Id: -1, Start: 7, Length: 2},
+		}}
+
+	// when
+	dm.MergeSpaces(1)
+
+	// then
+	assert.Equal(t, []day9.DiskEntry{
+		{Id: 0, Start: 0, Length: 4},
+		{Id: -1, Start: 4, Length: 5},
+	}, dm.Entries)
+}
+
+func TestCalculatesPart2ChecksumForSample(t *testing.T) {
 	// given
 	dm := day9.NewDiskMap(Sample)
-	outputs := parsing.Lines(`
-0099.111...2...333.44.5555.6666.777.8888..
-0099.1117772...333.44.5555.6666.....8888..
-0099.111777244.333....5555.6666.....8888..
-00992111777.44.333....5555.6666.....8888..`)
+	dm.DefragWholeDiskWithWholeFiles()
 
-	var result bool
-	for _, output := range outputs {
-		// when
-		result = dm.DefragLastWholeFile()
-
-		// then
-		assert.True(t, result)
-		assert.Equal(t, output, dm.String())
-	}
-
-	result = dm.DefragLastWholeFile()
-	assert.False(t, result)
-
+	// then
 	assert.Equal(t, 2858, dm.Checksum())
 }
 
@@ -208,5 +230,5 @@ func TestCalculatesChecksumForPart2(t *testing.T) {
 	dm.DefragWholeDiskWithWholeFiles()
 
 	// then
-	assert.Equal(t, 6307275788409, dm.Checksum())
+	assert.Equal(t, 6327174563252, dm.Checksum())
 }

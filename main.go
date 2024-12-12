@@ -146,4 +146,9 @@ func runDay9() {
 	dm = day9.NewDiskMap(input)
 	part1 := dm.DefragWholeDisk().Checksum()
 	fmt.Printf("Day 9 part 1: checksum = %d\n", part1) // 6307275788409
+
+	// part 1
+	dm = day9.NewDiskMap(input)
+	part2 := dm.DefragWholeDiskWithWholeFiles().Checksum()
+	fmt.Printf("Day 9 part 2: checksum = %d\n", part2) // 6327174563252
 }

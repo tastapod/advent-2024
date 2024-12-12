@@ -1,6 +1,7 @@
 package day9
 
 import (
+	"github.com/tastapod/advent-2024/internal/debug"
 	"slices"
 	"strconv"
 	"strings"
@@ -30,68 +31,37 @@ func (e *DiskEntry) Checksum() (result int) {
 }
 
 type DiskMap struct {
-	NextFileId   int
-	NextLocation int
-	Entries      []DiskEntry
+	Entries []DiskEntry
 }
 
-func NewDiskMap(line string) (dm DiskMap) {
-	dm = DiskMap{}
+func NewDiskMap(line string) DiskMap {
+	start := 0
+	nextId := 0
+	entries := make([]DiskEntry, 0)
 
-	for _, count := range []rune(line) {
-		length, _ := strconv.Atoi(string(count))
-		dm.AddEntryFromLength(length)
+	for i, length := range []rune(line) {
+		length, _ := strconv.Atoi(string(length))
+		if length == 0 {
+			continue
+		}
+		isFile := i%2 == 0
+		var id int
+		if isFile {
+			id = nextId
+			nextId++
+		} else {
+			id = -1
+		}
+		entries = append(entries, DiskEntry{Id: id, Start: start, Length: length})
+		start += length
 	}
-	return
-}
-
-func (dm *DiskMap) AddEntryFromLength(length int) {
-	entry := DiskEntry{
-		Id:     dm.NextId(),
-		Start:  dm.NextLocation,
-		Length: length,
-	}
-	dm.Entries = append(dm.Entries, entry)
-	dm.NextLocation += length
-}
-
-// NextId is either the next file id for a file entry, or -1 for a space
-//
-// We increment the next file id as a side effect if we are going to use this one
-func (dm *DiskMap) NextId() (id int) {
-	nextEntryIsFile := len(dm.Entries)%2 == 0
-
-	if nextEntryIsFile {
-		id = dm.NextFileId
-		dm.NextFileId++
-	} else {
-		id = -1
-	}
-	return
+	return DiskMap{Entries: entries}
 }
 
 // DefragLastFile moves the rightmost file into the first space and returns `true` if anything changed
 func (dm *DiskMap) DefragLastFile() bool {
-	return dm.DefragFile(dm.LastFile(), dm.FirstSpace())
-}
-
-// DefragLastWholeFile moves the rightmost file that can move wholesale into the first space that can hold it
-// otherwise it returns false
-func (dm *DiskMap) DefragLastWholeFile() bool {
-	for filePos, entry := range slices.Backward(dm.Entries) {
-		if entry.IsFile() {
-			// find first space big enough
-			if spacePos := slices.IndexFunc(dm.Entries, func(space DiskEntry) bool {
-				return space.IsSpace() && space.Length >= entry.Length && space.Start < entry.Start
-			}); spacePos != -1 {
-				// found one!
-				return dm.DefragFile(filePos, spacePos)
-			}
-		}
-	}
-
-	// none found
-	return false
+	filePos := dm.LastFile()
+	return dm.DefragFile(filePos, dm.FirstSpace(filePos, 1))
 }
 
 func (dm *DiskMap) DefragFile(filePos int, spacePos int) bool {
@@ -113,16 +83,17 @@ func (dm *DiskMap) DefragFile(filePos int, spacePos int) bool {
 	// same size
 	case file.Length == space.Length:
 		space.Id = file.Id // 'move' the file
-		file.Id = -1       // merge the spaces
+		dm.MergeSpaces(filePos)
 
 	// file is longer, leave some behind
 	case file.Length > space.Length:
-		space.Id = file.Id                         // 'move' part of the file
+		space.Id = file.Id                         // 'move' enough file to fill the space
 		file.Length -= space.Length                // adjust the remaining length
 		dm.Entries = append(dm.Entries, DiskEntry{ // pad the end
 			Id:     -1,
 			Start:  file.Start + space.Length,
 			Length: space.Length})
+		dm.MergeSpaces(len(dm.Entries) - 1)
 
 	// file is shorter
 	default:
@@ -142,7 +113,7 @@ func (dm *DiskMap) DefragFile(filePos int, spacePos int) bool {
 		space.Length -= movedFile.Length
 
 		// blank out original file
-		file.Id = -1
+		dm.MergeSpaces(filePos)
 	}
 	return true
 }
@@ -157,12 +128,12 @@ func (dm *DiskMap) LastFile() int {
 	return -1
 }
 
-func (dm *DiskMap) FirstSpace() int {
-	found := slices.IndexFunc(dm.Entries, func(e DiskEntry) bool { return e.IsSpace() && e.Length > 0 })
-	if found == -1 {
+func (dm *DiskMap) FirstSpace(filePos, minLength int) int {
+	spacePos := slices.IndexFunc(dm.Entries, func(e DiskEntry) bool { return e.IsSpace() && e.Length >= minLength })
+	if spacePos > filePos {
 		return -1
 	}
-	return found
+	return spacePos
 }
 
 func (dm *DiskMap) DefragWholeDisk() *DiskMap {
@@ -193,25 +164,69 @@ func (dm *DiskMap) Checksum() (result int) {
 	return
 }
 
-func (dm *DiskMap) Compact() {
-	compacted := make([]DiskEntry, 0)
-
-	for i := 0; i < len(dm.Entries); i++ {
-		e := dm.Entries[i]
-		if e.IsSpace() {
-			for j := i + 1; j < len(dm.Entries) && e.Id == dm.Entries[j].Id; j++ {
-				e.Length += dm.Entries[j].Length
-				i++
-			}
-		}
-		compacted = append(compacted, e)
-	}
-	dm.Entries = compacted
-}
-
 func (dm *DiskMap) DefragWholeDiskWithWholeFiles() *DiskMap {
-	for dm.DefragLastWholeFile() {
-		dm.Compact()
+	// step backwards through all files
+	maxId := dm.MaxId()
+	debug.Debug("Starting with", maxId)
+	for id := maxId; id >= 0; id-- {
+		//debug.Debug(dm.Entries)
+		filePos := slices.IndexFunc(dm.Entries, func(e DiskEntry) bool { return e.Id == id })
+		if spacePos := dm.FirstSpace(filePos, dm.Entries[filePos].Length); spacePos != -1 {
+			dm.DefragFile(filePos, spacePos)
+			//debug.Debug(dm.String())
+		}
 	}
 	return dm
+}
+
+// MergeSpaces checks for spaces either side of current position and merges where possible
+func (dm *DiskMap) MergeSpaces(pos int) {
+
+	current := &dm.Entries[pos]
+	var previous, next *DiskEntry
+
+	if pos > 0 {
+		previous = &dm.Entries[pos-1]
+	}
+	if pos < len(dm.Entries)-1 {
+		next = &dm.Entries[pos+1]
+	}
+
+	if previous != nil && previous.IsSpace() {
+		// merge with previous
+		if next != nil && next.IsSpace() {
+			// also merge with next
+			dm.Entries = slices.Replace(dm.Entries, pos-1, pos+2, DiskEntry{
+				Id:     -1,
+				Start:  previous.Start,
+				Length: previous.Length + current.Length + next.Length,
+			})
+		} else {
+			// just previous and current
+			dm.Entries = slices.Replace(dm.Entries, pos-1, pos+1, DiskEntry{
+				Id:     -1,
+				Start:  previous.Start,
+				Length: previous.Length + current.Length,
+			})
+		}
+	} else if next != nil && next.IsSpace() {
+		// just current and next
+		dm.Entries = slices.Replace(dm.Entries, pos, pos+2, DiskEntry{
+			Id:     -1,
+			Start:  current.Start,
+			Length: current.Length + next.Length,
+		})
+	} else {
+		// nope, just us
+		current.Id = -1
+	}
+}
+
+func (dm *DiskMap) MaxId() int {
+	for _, entry := range slices.Backward(dm.Entries) {
+		if entry.IsFile() {
+			return entry.Id
+		}
+	}
+	return -1
 }

@@ -80,8 +80,8 @@ This was another by-the-numbers exercise. I had a typo in the one line of code I
 
 This one went round the houses. I initially started with a doubly-linked list, figuring I would be inserting, slicing, chopping, etc. This led me down the rabbit hole of Go 1.23 `iter.Seq` and `slices`, reading this [fantastic article][go-seq], and starting to mess with `list.List`, which predates generics, so the entries have an `any` value hanging off them.
 
-In the end I backed out all of this yak-shaving and went with an array of disk entries which worked out fine. I had a small gotcha with pointers to entries going wonky if you change the underlying array (thanks, `slices.Replace`!), but luckily my tests caught me.
+In the end I backed out all of this yak-shaving and went with an array of disk entries which worked out fine. I had a small gotcha with pointers to entries going wonky if you change the underlying array (thanks, `slices.Replace`!), but luckily my tests caught me. This is the first day when I have written a `String()` method to show the working contents.
 
-This is the first day when I have written a `String()` method to show the working contents.
+Part 2 showed me I should have used a deque after all! Lots of inserting, shifting, merging of adjacent spaces. I misread the requirement the first time, then TDD saved me again and I rewrote the defrag method to also merge spaces as it went along. 
 
 [go-seq]: https://go.dev/blog/range-functions
