@@ -1,6 +1,8 @@
 package day4
 
-import "github.com/tastapod/advent-2024/grids"
+import (
+	"github.com/tastapod/advent-2024/internal/grids"
+)
 
 func HasWord(word string, grid grids.Grid, offset grids.Offset, pos grids.Position) bool {
 	var FindRest func(rest []rune, pos grids.Position) bool

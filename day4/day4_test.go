@@ -3,7 +3,7 @@ package day4_test
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tastapod/advent-2024/day4"
-	"github.com/tastapod/advent-2024/grids"
+	"github.com/tastapod/advent-2024/internal/grids"
 	"strings"
 	"testing"
 )

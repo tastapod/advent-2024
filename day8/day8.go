@@ -1,7 +1,7 @@
 package day8
 
 import (
-	"github.com/tastapod/advent-2024/grids"
+	"github.com/tastapod/advent-2024/internal/grids"
 	"sync"
 )
 

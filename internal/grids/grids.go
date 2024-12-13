@@ -3,7 +3,7 @@ package grids
 import "strconv"
 
 type Grid struct {
-	Grid    [][]rune
+	grid    [][]rune
 	PadSize int
 	NumRows int
 	NumCols int
@@ -18,26 +18,26 @@ func PadGrid(lines []string, padSize int) (result Grid) {
 	totalCols := numCols + 2*padSize
 
 	result = Grid{
-		Grid:    make([][]rune, totalRows),
+		grid:    make([][]rune, totalRows),
 		PadSize: padSize,
 		NumRows: numRows,
 		NumCols: numCols,
 	}
 
 	// blank the grid
-	for i := range result.Grid {
-		result.Grid[i] = make([]rune, totalCols)
+	for i := range result.grid {
+		result.grid[i] = make([]rune, totalCols)
 	}
 
 	// copy in the values
 	for i := range numRows {
-		copy(result.Grid[i+padSize][padSize:], []rune(lines[i]))
+		copy(result.grid[i+padSize][padSize:], []rune(lines[i]))
 	}
 	return
 }
 
 func (g *Grid) At(row, col int) rune {
-	return (*g).Grid[row+g.PadSize][col+g.PadSize]
+	return (*g).grid[row+g.PadSize][col+g.PadSize]
 }
 
 // IntAt returns the int value of the current cell, or -1 for invalid cells, e.g.
@@ -53,7 +53,7 @@ func (g *Grid) IntAt(row, col int) int {
 
 // Row returns the row sans padding
 func (g *Grid) Row(row int) []rune {
-	return g.Grid[row+g.PadSize][g.PadSize : g.PadSize+g.NumCols]
+	return g.grid[row+g.PadSize][g.PadSize : g.PadSize+g.NumCols]
 }
 
 type Position struct {

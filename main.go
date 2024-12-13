@@ -12,7 +12,7 @@ import (
 	"github.com/tastapod/advent-2024/day7"
 	"github.com/tastapod/advent-2024/day8"
 	"github.com/tastapod/advent-2024/day9"
-	"github.com/tastapod/advent-2024/grids"
+	"github.com/tastapod/advent-2024/internal/grids"
 	"github.com/tastapod/advent-2024/internal/parsing"
 	"time"
 )
