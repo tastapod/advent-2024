@@ -18,18 +18,19 @@ type GuardTracker struct {
 	Obstacle grids.Position
 }
 
-func NewGuardTracker(grid grids.Grid) (g *GuardTracker) {
-	g = &GuardTracker{
+func NewGuardTracker(grid grids.Grid) (gt *GuardTracker) {
+	gt = &GuardTracker{
 		Grid: grid,
 	}
 
-	for row, rowChars := range g.Grid {
+	for row := range gt.Grid.NumRows {
+		rowChars := gt.Grid.Row(row)
 		if col := strings.IndexAny(string(rowChars), "<^>v"); col != -1 {
-			g.Here = Step{
+			gt.Here = Step{
 				grids.Position{Row: row, Col: col},
 				grids.Dir(rowChars[col]),
 			}
-			g.History = map[Step]bool{g.Here: true}
+			gt.History = map[Step]bool{gt.Here: true}
 			break
 		}
 	}
@@ -82,7 +83,7 @@ func (gt *GuardTracker) Move() (result WhatHappened) {
 	if nextPos == gt.Obstacle {
 		contents = '#'
 	} else {
-		contents = gt.Grid[nextPos.Row][nextPos.Col]
+		contents = gt.Grid.At(nextPos.Row, nextPos.Col)
 	}
 
 	switch contents {
@@ -113,12 +114,9 @@ func CountWaysToForceLoop(grid grids.Grid) (total int) {
 	results := make(chan bool) // we will only send successes along this
 	trackerGroup := sync.WaitGroup{}
 
-	rowsToCheck := len(grid) - 1
-	colsToCheck := len(grid[0]) - 1
-
 	// spin up the workers
-	for row := 1; row < rowsToCheck; row++ {
-		for col := 1; col < colsToCheck; col++ {
+	for row := 0; row < grid.NumRows; row++ {
+		for col := 0; col < grid.NumCols; col++ {
 			// so we can wait for them at the end
 			trackerGroup.Add(1)
 

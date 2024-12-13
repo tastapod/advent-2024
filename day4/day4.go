@@ -8,7 +8,7 @@ func HasWord(word string, grid grids.Grid, offset grids.Offset, pos grids.Positi
 	FindRest = func(rest []rune, pos grids.Position) bool {
 		if len(rest) == 0 {
 			return true
-		} else if grid[pos.Row][pos.Col] != rest[0] {
+		} else if grid.At(pos.Row, pos.Col) != rest[0] {
 			return false
 		} else {
 			return FindRest(rest[1:], pos.Plus(offset))
@@ -23,9 +23,9 @@ func CountWords(word string, source []string) (result int) {
 	pad := len(runes) - 1
 	grid := grids.PadGrid(source, pad)
 
-	for row := range len(source) {
-		for col := range len(source[0]) {
-			pos := grids.Position{Row: row + pad, Col: col + pad}
+	for row := range grid.NumRows {
+		for col := range grid.NumCols {
+			pos := grids.Position{Row: row, Col: col}
 			result += countWordsAroundPosition(word, grid, pos)
 		}
 	}
@@ -45,8 +45,8 @@ func countWordsAroundPosition(word string, grid grids.Grid, pos grids.Position) 
 }
 
 func HasCrossMAS(grid grids.Grid, pos grids.Position) bool {
-	return isMAS(grid[pos.Row-1][pos.Col-1], grid[pos.Row][pos.Col], grid[pos.Row+1][pos.Col+1]) &&
-		isMAS(grid[pos.Row-1][pos.Col+1], grid[pos.Row][pos.Col], grid[pos.Row+1][pos.Col-1])
+	return isMAS(grid.At(pos.Row-1, pos.Col-1), grid.At(pos.Row, pos.Col), grid.At(pos.Row+1, pos.Col+1)) &&
+		isMAS(grid.At(pos.Row-1, pos.Col+1), grid.At(pos.Row, pos.Col), grid.At(pos.Row+1, pos.Col-1))
 }
 
 func isMAS(r1, r2, r3 rune) bool {
@@ -54,12 +54,11 @@ func isMAS(r1, r2, r3 rune) bool {
 }
 
 func CountCrossMAS(source []string) (result int) {
-	pad := 1
-	grid := grids.PadGrid(source, pad)
+	grid := grids.PadGrid(source, 1)
 
 	for row := range len(source) {
 		for col := range len(source[0]) {
-			if HasCrossMAS(grid, grids.Position{Row: row + pad, Col: col + pad}) {
+			if HasCrossMAS(grid, grids.Position{Row: row, Col: col}) {
 				result++
 			}
 		}

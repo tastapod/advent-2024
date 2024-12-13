@@ -1,31 +1,59 @@
 package grids
 
-type Grid [][]rune
+import "strconv"
+
+type Grid struct {
+	Grid    [][]rune
+	PadSize int
+	NumRows int
+	NumCols int
+}
 
 // PadGrid pads a source grid of a list of strings with empty lines
 // above and below, and padding on either side of each line
-func PadGrid(lines []string, pad int) (result Grid) {
+func PadGrid(lines []string, padSize int) (result Grid) {
 	numRows := len(lines)
 	numCols := len(lines[0])
-	totalRows := numRows + 2*pad
-	totalCols := numCols + 2*pad
+	totalRows := numRows + 2*padSize
+	totalCols := numCols + 2*padSize
 
-	result = make(Grid, totalRows)
+	result = Grid{
+		Grid:    make([][]rune, totalRows),
+		PadSize: padSize,
+		NumRows: numRows,
+		NumCols: numCols,
+	}
 
 	// blank the grid
-	for i := range result {
-		result[i] = make([]rune, totalCols)
+	for i := range result.Grid {
+		result.Grid[i] = make([]rune, totalCols)
 	}
 
 	// copy in the values
 	for i := range numRows {
-		copy(result[i+pad][pad:], []rune(lines[i]))
+		copy(result.Grid[i+padSize][padSize:], []rune(lines[i]))
 	}
 	return
 }
 
-func (g *Grid) At(p Position) rune {
-	return (*g)[p.Row][p.Col]
+func (g *Grid) At(row, col int) rune {
+	return (*g).Grid[row+g.PadSize][col+g.PadSize]
+}
+
+// IntAt returns the int value of the current cell, or -1 for invalid cells, e.g.
+// non-numeric or padding cells
+// We avoid the idiomatic (result, ok) semantics to make it easier to use in expression
+func (g *Grid) IntAt(row, col int) int {
+	if i, err := strconv.ParseInt(string(g.At(row, col)), 10, 0); err != nil {
+		return -1
+	} else {
+		return int(i)
+	}
+}
+
+// Row returns the row sans padding
+func (g *Grid) Row(row int) []rune {
+	return g.Grid[row+g.PadSize][g.PadSize : g.PadSize+g.NumCols]
 }
 
 type Position struct {

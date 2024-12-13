@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/tastapod/advent-2024/day1"
+	"github.com/tastapod/advent-2024/day10"
 	"github.com/tastapod/advent-2024/day2"
 	"github.com/tastapod/advent-2024/day3"
 	"github.com/tastapod/advent-2024/day4"
@@ -26,6 +27,7 @@ func main() {
 	stopwatch(runDay7)
 	stopwatch(runDay8)
 	stopwatch(runDay9)
+	stopwatch(runDay10)
 }
 
 func stopwatch(fn func()) {
@@ -53,7 +55,7 @@ func runDay2() {
 			numSafe++
 		}
 	}
-	fmt.Printf("Day 2 part 1: %d safe reports\n", numSafe)
+	fmt.Printf("Day 2 part 1: %d safe reports\n", numSafe) // 598
 
 	// part 2
 	numSafe = 0
@@ -62,7 +64,7 @@ func runDay2() {
 			numSafe++
 		}
 	}
-	fmt.Printf("Day 2 part 2: %d safe reports\n", numSafe)
+	fmt.Printf("Day 2 part 2: %d safe reports\n", numSafe) // 634
 }
 
 func runDay3() {
@@ -151,4 +153,13 @@ func runDay9() {
 	dm = day9.NewDiskMap(input)
 	part2 := dm.DefragWholeDiskWithWholeFiles().Checksum()
 	fmt.Printf("Day 9 part 2: checksum = %d\n", part2) // 6327174563252
+}
+
+func runDay10() {
+	input := parsing.ReadAndSplitDay(10)
+
+	// part 1
+	trailFinder := day10.NewTrailFinder(input)
+	part1 := trailFinder.CountTrailsFromAllTrailheads()
+	fmt.Printf("Day 10 part 1: %d\n", part1)
 }

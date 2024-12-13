@@ -1,7 +1,6 @@
 package day9
 
 import (
-	"github.com/tastapod/advent-2024/internal/debug"
 	"slices"
 	"strconv"
 	"strings"
@@ -167,7 +166,6 @@ func (dm *DiskMap) Checksum() (result int) {
 func (dm *DiskMap) DefragWholeDiskWithWholeFiles() *DiskMap {
 	// step backwards through all files
 	maxId := dm.MaxId()
-	debug.Debug("Starting with", maxId)
 	for id := maxId; id >= 0; id-- {
 		//debug.Debug(dm.Entries)
 		filePos := slices.IndexFunc(dm.Entries, func(e DiskEntry) bool { return e.Id == id })

@@ -10,7 +10,7 @@ import (
 
 func TestFindsWordForwards(t *testing.T) {
 	// given
-	grid := [][]rune{[]rune("  XMAS  ")}
+	grid := grids.PadGrid([]string{"  XMAS  "}, 0)
 
 	// then
 	assert.Equal(t, true, day4.HasWord(
@@ -23,7 +23,7 @@ func TestFindsWordForwards(t *testing.T) {
 
 func TestFindsWordBackwards(t *testing.T) {
 	// given
-	grid := [][]rune{[]rune("  SAMX  ")}
+	grid := grids.PadGrid([]string{"  SAMX  "}, 0)
 
 	// then
 	assert.Equal(t, true, day4.HasWord(
@@ -36,12 +36,12 @@ func TestFindsWordBackwards(t *testing.T) {
 
 func TestFindsWordDown(t *testing.T) {
 	// given
-	grid := [][]rune{
-		[]rune("    X  "),
-		[]rune("    M  "),
-		[]rune("    A  "),
-		[]rune("    S  "),
-	}
+	grid := grids.PadGrid([]string{
+		"    X  ",
+		"    M  ",
+		"    A  ",
+		"    S  "},
+		0)
 
 	// then
 	assert.Equal(t, true, day4.HasWord(
@@ -54,12 +54,12 @@ func TestFindsWordDown(t *testing.T) {
 
 func TestFindsWordUpRight(t *testing.T) {
 	// given
-	grid := [][]rune{
-		[]rune("     S "),
-		[]rune("    A  "),
-		[]rune("   M   "),
-		[]rune("  X    "),
-	}
+	grid := grids.PadGrid([]string{
+		"     S ",
+		"    A  ",
+		"   M   ",
+		"  X    ",
+	}, 1)
 
 	// then
 	assert.Equal(t, true, day4.HasWord(
@@ -83,27 +83,6 @@ MAMMMXMMMM
 MXMXAXMASX
 `), "\n")
 
-func TestBuildsPaddedGrid(t *testing.T) {
-	assert := assert.New(t)
-
-	// given
-	grid := grids.PadGrid(Part1Grid, 3)
-
-	// then
-	padding := make([]rune, 16) // 3 + 10 + 3
-
-	assert.Equal(16, len(grid))
-	assert.Equal(16, len(grid[0]))
-
-	assert.Equal(padding, grid[0])
-	assert.Equal(padding, grid[1])
-	assert.Equal(padding, grid[2])
-
-	assert.Equal(padding, grid[13])
-	assert.Equal(padding, grid[14])
-	assert.Equal(padding, grid[15])
-}
-
 func TestCountsAllWords(t *testing.T) {
 	// given
 	assert.Equal(t, 18, day4.CountWords("XMAS", Part1Grid))
@@ -111,11 +90,11 @@ func TestCountsAllWords(t *testing.T) {
 
 func TestFindsCrossMAS(t *testing.T) {
 	// given
-	grid := grids.Grid{
-		[]rune(".M.S."),
-		[]rune("..A.."),
-		[]rune(".M.S."),
-	}
+	grid := grids.PadGrid([]string{
+		".M.S.",
+		"..A..",
+		".M.S."},
+		0)
 
 	// then
 	assert.True(t, day4.HasCrossMAS(grid, grids.Position{Row: 1, Col: 2}))
