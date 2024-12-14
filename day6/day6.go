@@ -6,8 +6,10 @@ import (
 	"sync"
 )
 
+type P = grids.Position
+
 type Step struct {
-	grids.Position
+	P
 	grids.Dir
 }
 
@@ -15,7 +17,7 @@ type GuardTracker struct {
 	grids.Grid
 	Here     Step
 	History  map[Step]bool
-	Obstacle grids.Position
+	Obstacle P
 }
 
 func NewGuardTracker(grid grids.Grid) (gt *GuardTracker) {
@@ -27,7 +29,7 @@ func NewGuardTracker(grid grids.Grid) (gt *GuardTracker) {
 		rowChars := gt.Grid.Row(row)
 		if col := strings.IndexAny(string(rowChars), "<^>v"); col != -1 {
 			gt.Here = Step{
-				grids.Position{Row: row, Col: col},
+				P{Row: row, Col: col},
 				grids.Dir(rowChars[col]),
 			}
 			gt.History = map[Step]bool{gt.Here: true}
@@ -37,7 +39,7 @@ func NewGuardTracker(grid grids.Grid) (gt *GuardTracker) {
 	return
 }
 
-func NewGuardTrackerWithObstacle(grid grids.Grid, obstacle grids.Position) (gt *GuardTracker) {
+func NewGuardTrackerWithObstacle(grid grids.Grid, obstacle P) (gt *GuardTracker) {
 	gt = NewGuardTracker(grid)
 	gt.Obstacle = obstacle
 	return
@@ -45,9 +47,9 @@ func NewGuardTrackerWithObstacle(grid grids.Grid, obstacle grids.Position) (gt *
 
 func (gt *GuardTracker) CountAllPositions() int {
 	gt.MoveUntilFinished()
-	allPositions := make(map[grids.Position]bool)
+	allPositions := make(map[P]bool)
 	for step := range gt.History {
-		allPositions[step.Position] = true
+		allPositions[step.P] = true
 	}
 	return len(allPositions)
 }
@@ -92,7 +94,7 @@ func (gt *GuardTracker) Move() (result WhatHappened) {
 		return Exited
 	case '#':
 		// hit an obstacle, so turn right
-		nextStep = Step{gt.Here.Position, TurnRight[gt.Here.Dir]}
+		nextStep = Step{gt.Here.P, TurnRight[gt.Here.Dir]}
 	default:
 		// valid move, keep in this direction
 		nextStep = Step{nextPos, gt.Here.Dir}
@@ -123,7 +125,7 @@ func CountWaysToForceLoop(grid grids.Grid) (total int) {
 			// always pass the writer channel explicitly, because reasons
 			go func(out chan<- bool) {
 				defer trackerGroup.Done()
-				tracker := NewGuardTrackerWithObstacle(grid, grids.Position{Row: row, Col: col})
+				tracker := NewGuardTrackerWithObstacle(grid, P{Row: row, Col: col})
 
 				if result := tracker.MoveUntilFinished(); result == Looped {
 					out <- true

@@ -14,16 +14,18 @@ type Pair[T comparable] struct {
 	L, R T
 }
 
-func EmitNearestAntinodes(antennae Pair[grids.Position], size Size, out chan<- grids.Position) {
+type P = grids.Position
+
+func EmitNearestAntinodes(antennae Pair[P], size Size, out chan<- P) {
 	offset := grids.OffsetFrom(antennae.L, antennae.R)
-	for _, antinode := range []grids.Position{antennae.L.Minus(offset), antennae.L.Plus(offset.Times(2))} {
+	for _, antinode := range []P{antennae.L.Minus(offset), antennae.L.Plus(offset.Times(2))} {
 		if isInGrid(antinode, size) {
 			out <- antinode
 		}
 	}
 }
 
-func isInGrid(pos grids.Position, size Size) bool {
+func isInGrid(pos P, size Size) bool {
 	return isInRange(pos.Row, 0, size.NumRows) && isInRange(pos.Col, 0, size.NumCols)
 }
 
@@ -41,12 +43,12 @@ func Combinations[T comparable](source []T) (result []Pair[T]) {
 	return
 }
 
-func CollectAntennae(input []string) (result map[rune][]grids.Position) {
-	result = make(map[rune][]grids.Position)
+func CollectAntennae(input []string) (result map[rune][]P) {
+	result = make(map[rune][]P)
 	for row, rowLine := range input {
 		for col, pos := range []rune(rowLine) {
 			if pos != '.' {
-				result[pos] = append(result[pos], grids.Position{Row: row, Col: col})
+				result[pos] = append(result[pos], P{Row: row, Col: col})
 			}
 		}
 	}
@@ -58,26 +60,26 @@ func CountNearestAntinodes(input []string) int {
 
 }
 
-func countAntinodes(input []string, emitAntinodes func(antennae Pair[grids.Position], size Size, out chan<- grids.Position)) int {
+func countAntinodes(input []string, emitAntinodes func(antennae Pair[P], size Size, out chan<- P)) int {
 	antennaMap := CollectAntennae(input)
 	size := Size{NumRows: len(input), NumCols: len(input[0])}
-	antinodes := make(map[grids.Position]bool)
+	antinodes := make(map[P]bool)
 
-	positions := make(chan grids.Position)
+	positions := make(chan P)
 	waitGroup := sync.WaitGroup{}
 
 	for _, antennae := range antennaMap {
 		combinations := Combinations(antennae)
 		for _, pair := range combinations {
 			waitGroup.Add(1)
-			go func(out chan<- grids.Position) {
+			go func(out chan<- P) {
 				defer waitGroup.Done()
 				emitAntinodes(pair, size, positions)
 			}(positions)
 		}
 	}
 
-	go func(out chan<- grids.Position) {
+	go func(out chan<- P) {
 		waitGroup.Wait()
 		close(positions)
 	}(positions)
@@ -93,7 +95,7 @@ func CountAllAntinodes(input []string) int {
 	return countAntinodes(input, EmitAllAntinodes)
 }
 
-func EmitAllAntinodes(antennae Pair[grids.Position], size Size, out chan<- grids.Position) {
+func EmitAllAntinodes(antennae Pair[P], size Size, out chan<- P) {
 	offset := grids.OffsetFrom(antennae.L, antennae.R)
 
 	for antinode := antennae.L; isInGrid(antinode, size); antinode = antinode.Plus(offset) {

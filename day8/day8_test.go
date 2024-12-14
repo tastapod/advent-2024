@@ -8,11 +8,13 @@ import (
 	"testing"
 )
 
+type P = grids.Position
+
 func TestCalculatesAntinodes(t *testing.T) {
 	// given
-	var antennae = day8.Pair[grids.Position]{
-		L: grids.Position{Row: 3, Col: 4},
-		R: grids.Position{Row: 5, Col: 5},
+	var antennae = day8.Pair[P]{
+		L: P{Row: 3, Col: 4},
+		R: P{Row: 5, Col: 5},
 	}
 
 	// when
@@ -20,15 +22,15 @@ func TestCalculatesAntinodes(t *testing.T) {
 
 	// then
 	assert.Equal(t, 2, len(antinodes))
-	assert.Contains(t, antinodes, grids.Position{Row: 1, Col: 3})
-	assert.Contains(t, antinodes, grids.Position{Row: 7, Col: 6})
+	assert.Contains(t, antinodes, P{Row: 1, Col: 3})
+	assert.Contains(t, antinodes, P{Row: 7, Col: 6})
 }
 
-func antinodes(antennae day8.Pair[grids.Position], size day8.Size) []grids.Position {
-	ch := make(chan grids.Position, 2)
+func antinodes(antennae day8.Pair[P], size day8.Size) []P {
+	ch := make(chan P, 2)
 	day8.EmitNearestAntinodes(antennae, size, ch)
 	close(ch)
-	var antinodes []grids.Position
+	var antinodes []P
 
 	for antinode := range ch {
 		antinodes = append(antinodes, antinode)
@@ -38,9 +40,9 @@ func antinodes(antennae day8.Pair[grids.Position], size day8.Size) []grids.Posit
 
 func TestIgnoresAntinodesOutsideOfGrid(t *testing.T) {
 	// given
-	var antennae = day8.Pair[grids.Position]{
-		L: grids.Position{Row: 3, Col: 4},
-		R: grids.Position{Row: 4, Col: 8},
+	var antennae = day8.Pair[P]{
+		L: P{Row: 3, Col: 4},
+		R: P{Row: 4, Col: 8},
 	}
 
 	// when
@@ -48,7 +50,7 @@ func TestIgnoresAntinodesOutsideOfGrid(t *testing.T) {
 
 	// then
 	assert.Equal(t, 1, len(antinodes))
-	assert.Contains(t, antinodes, grids.Position{Row: 2, Col: 0})
+	assert.Contains(t, antinodes, P{Row: 2, Col: 0})
 }
 
 func TestGeneratesCombinationsOfPairs(t *testing.T) {
@@ -85,11 +87,11 @@ func TestCollectsDifferentTypesOfAntenna(t *testing.T) {
 
 	// then
 	assert.Equal(t, 4, len(antennae['0']))
-	assert.Contains(t, antennae['0'], grids.Position{Row: 1, Col: 8})
+	assert.Contains(t, antennae['0'], P{Row: 1, Col: 8})
 
 	assert.Equal(t, 3, len(antennae['A']))
-	assert.Contains(t, antennae['A'], grids.Position{Row: 8, Col: 8})
-	assert.Contains(t, antennae['A'], grids.Position{Row: 9, Col: 9})
+	assert.Contains(t, antennae['A'], P{Row: 8, Col: 8})
+	assert.Contains(t, antennae['A'], P{Row: 9, Col: 9})
 }
 
 func TestCountsPositionsOfNearestAntinodes(t *testing.T) {

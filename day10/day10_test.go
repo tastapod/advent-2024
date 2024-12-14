@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+type P = grids.Position
+
 var Example1 = parsing.Lines(`
 0123
 1234
@@ -20,7 +22,7 @@ func TestFindsTrailsFromTrailhead(t *testing.T) {
 	finder := day10.NewTrailFinder(Example1)
 
 	// when
-	trails := finder.CountTrailsFrom(grids.Position{Row: 0, Col: 0})
+	trails := finder.CountTrailsFrom(P{Row: 0, Col: 0})
 
 	// then
 	assert.Equal(t, 1, trails)
@@ -40,7 +42,7 @@ func TestFindsTrailsForExample2(t *testing.T) {
 	finder := day10.NewTrailFinder(Example2)
 
 	// when
-	trails := finder.CountTrailsFrom(grids.Position{Row: 0, Col: 3})
+	trails := finder.CountTrailsFrom(P{Row: 0, Col: 3})
 
 	// then
 	assert.Equal(t, 4, trails)
@@ -56,24 +58,55 @@ var Example3 = parsing.Lines(`
 01329801
 10456732`)
 
-func TestFindsRoutesForAllTrailheads(t *testing.T) {
+func TestSumsRoutesForAllTrailheads(t *testing.T) {
 	// given
 	finder := day10.NewTrailFinder(Example3)
 
 	// when
-	trails := finder.CountTrailsFromAllTrailheads()
+	trails := finder.SumTrailsFromAllTrailheads()
 
 	// then
 	assert.Equal(t, 36, trails)
 }
 
-func TestCountsRoutesForPart1(t *testing.T) {
+func TestSumsRoutesForPart1(t *testing.T) {
 	// given
 	finder := day10.NewTrailFinder(parsing.Lines(parsing.TrimFile("input.txt")))
 
 	// when
-	trails := finder.CountTrailsFromAllTrailheads()
+	trails := finder.SumTrailsFromAllTrailheads()
 
 	// then
 	assert.Equal(t, 510, trails)
+}
+
+var Example4 = parsing.Lines(`
+012345
+123456
+234567
+345678
+4.6789
+56789.`)
+
+func TestCalculatesRatingForTrailhead(t *testing.T) {
+	// given
+	finder := day10.NewTrailFinder(Example4)
+	var rating int
+
+	// when
+	rating = finder.RatingFor(P{Row: 0, Col: 0})
+
+	// then
+	assert.Equal(t, 227, rating)
+}
+
+func TestSumsRatingsForAllTrailheads(t *testing.T) {
+	// given
+	finder := day10.NewTrailFinder(Example3)
+
+	// when
+	total := finder.SumRatingsForAllTrailheads()
+
+	// then
+	assert.Equal(t, 81, total)
 }

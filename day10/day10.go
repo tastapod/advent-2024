@@ -9,15 +9,21 @@ type TrailFinder struct {
 	grids.Grid
 }
 
-func (tf *TrailFinder) CountTrailsFrom(trailhead grids.Position) (result int) {
-	trailends := sets.NewSet[grids.Position](trailhead)
-	tops := sets.NewSet[grids.Position]()
+type P = grids.Position
+type D = grids.Offset
+
+func NewTrailFinder(input []string) (tf TrailFinder) {
+	tf = TrailFinder{Grid: grids.PadGrid(input, 1)}
+	return
+}
+
+func (tf *TrailFinder) CountTrailsFrom(trailhead P) (result int) {
+	trailends := sets.NewSet[P](trailhead)
+	tops := sets.NewSet[P]()
 
 	for !trailends.IsEmpty() {
-		//debug.Debug(trailends)
-		newTrailends := sets.NewSet[grids.Position]()
+		newTrailends := sets.NewSet[P]()
 		for trailend := range trailends.All() {
-			//debug.Debug("Checking", trailend)
 			// have we reached the top?
 			height := tf.IntAt(trailend.Row, trailend.Col)
 			if height == 9 {
@@ -27,14 +33,13 @@ func (tf *TrailFinder) CountTrailsFrom(trailhead grids.Position) (result int) {
 			}
 
 			// check around trailend
-			for _, next := range []grids.Position{
-				trailend.Plus(grids.Offset{DRow: 1}),
-				trailend.Minus(grids.Offset{DRow: 1}),
-				trailend.Plus(grids.Offset{DCol: 1}),
-				trailend.Minus(grids.Offset{DCol: 1}),
+			for _, next := range []P{
+				trailend.Plus(D{DRow: 1}),
+				trailend.Minus(D{DRow: 1}),
+				trailend.Plus(D{DCol: 1}),
+				trailend.Minus(D{DCol: 1}),
 			} {
 				if tf.IntAt(next.Row, next.Col) == height+1 {
-					//debug.Debug("Moving to", next, "at", height+1)
 					newTrailends.Add(next)
 				}
 			}
@@ -44,21 +49,56 @@ func (tf *TrailFinder) CountTrailsFrom(trailhead grids.Position) (result int) {
 	return tops.Len()
 }
 
-func (tf *TrailFinder) CountTrailsFromAllTrailheads() (result int) {
+func (tf *TrailFinder) SumTrailsFromAllTrailheads() (total int) {
 	for row := range tf.NumRows {
 		for col := range tf.NumCols {
 			height := tf.IntAt(row, col)
 			if height == 0 { // trailhead
-				result += tf.CountTrailsFrom(grids.Position{Row: row, Col: col})
+				total += tf.CountTrailsFrom(P{Row: row, Col: col})
 			}
 		}
 	}
 	return
 }
 
-func NewTrailFinder(input []string) (tf TrailFinder) {
-	tf = TrailFinder{
-		Grid: grids.PadGrid(input, 1),
+func (tf *TrailFinder) RatingFor(trailhead P) (rating int) {
+	trailends := []P{trailhead}
+
+	for len(trailends) > 0 {
+		newTrailends := make([]P, 0)
+		for _, trailend := range trailends {
+			// have we reached the top?
+			height := tf.IntAt(trailend.Row, trailend.Col)
+			if height == 9 {
+				// found a top
+				rating++
+				continue
+			}
+
+			// check around trailend
+			for _, next := range []P{
+				trailend.Plus(D{DRow: 1}),
+				trailend.Minus(D{DRow: 1}),
+				trailend.Plus(D{DCol: 1}),
+				trailend.Minus(D{DCol: 1}),
+			} {
+				if tf.IntAt(next.Row, next.Col) == height+1 {
+					newTrailends = append(newTrailends, next)
+				}
+			}
+		}
+		trailends = newTrailends
+	}
+	return
+}
+
+func (tf *TrailFinder) SumRatingsForAllTrailheads() (total int) {
+	for row := range tf.NumRows {
+		for col := range tf.NumCols {
+			if tf.IntAt(row, col) == 0 {
+				total += tf.RatingFor(P{Row: row, Col: col})
+			}
+		}
 	}
 	return
 }

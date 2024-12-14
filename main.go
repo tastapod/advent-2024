@@ -157,9 +157,13 @@ func runDay9() {
 
 func runDay10() {
 	input := parsing.ReadAndSplitDay(10)
+	trailFinder := day10.NewTrailFinder(input)
 
 	// part 1
-	trailFinder := day10.NewTrailFinder(input)
-	part1 := trailFinder.CountTrailsFromAllTrailheads()
+	part1 := trailFinder.SumTrailsFromAllTrailheads()
 	fmt.Printf("Day 10 part 1: %d\n", part1)
+
+	// part 2
+	part2 := trailFinder.SumRatingsForAllTrailheads()
+	fmt.Printf("Day 10 part 2: %d\n", part2)
 }
