@@ -85,3 +85,11 @@ In the end I backed out all of this yak-shaving and went with an array of disk e
 Part 2 showed me I should have used a deque after all! Lots of inserting, shifting, merging of adjacent spaces. I misread the requirement the first time, then TDD saved me again and I rewrote the defrag method to also merge spaces as it went along. 
 
 [go-seq]: https://go.dev/blog/range-functions
+
+### Day 10
+
+This was straightforward enough. It caused me to write a proper `Set[T]` implementation to do some of the lifting, and I made `grids.Grid` more self-contained.
+
+### Day 12
+
+I skipped to Day 12 because I heard it was tricky! My approach with counting the perimeter is to assume all plots have four fences--i.e. the perimeter is 4 x number of plots--then subtract 2 at a time for adjacent cells, which worked. Part 1 has one gotcha, which is that working from top left, I might have merged with the plot to my left in its own region before I realise that the plot above is also connected, so I have to merge regions.

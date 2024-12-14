@@ -20,6 +20,14 @@ func TrimFile(file string) string {
 	return strings.TrimSpace(string(content))
 }
 
+func FileLines(file string) []string {
+	content, err := os.ReadFile(file)
+	if err != nil {
+		panic(fmt.Sprintf("%s: error %s", file, err))
+	}
+	return Lines(string(content))
+}
+
 // ReadAndSplitDay reads a file called `input.txt` and splits it on newlines
 func ReadAndSplitDay(day int) []string {
 	return strings.Split(ReadDay(day), "\n")

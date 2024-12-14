@@ -30,6 +30,7 @@ func (s *Set[T]) Add(value T) {
 	s.values[value] = true
 }
 
+// All provides an iterator function compatible with [range]
 func (s *Set[T]) All() iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for v := range s.values {

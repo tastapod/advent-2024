@@ -71,7 +71,7 @@ func TestSumsRoutesForAllTrailheads(t *testing.T) {
 
 func TestSumsRoutesForPart1(t *testing.T) {
 	// given
-	finder := day10.NewTrailFinder(parsing.Lines(parsing.TrimFile("input.txt")))
+	finder := day10.NewTrailFinder(parsing.FileLines("input.txt"))
 
 	// when
 	trails := finder.SumTrailsFromAllTrailheads()

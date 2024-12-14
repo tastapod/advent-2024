@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/tastapod/advent-2024/day1"
 	"github.com/tastapod/advent-2024/day10"
+	"github.com/tastapod/advent-2024/day12"
 	"github.com/tastapod/advent-2024/day2"
 	"github.com/tastapod/advent-2024/day3"
 	"github.com/tastapod/advent-2024/day4"
@@ -28,6 +29,7 @@ func main() {
 	stopwatch(runDay8)
 	stopwatch(runDay9)
 	stopwatch(runDay10)
+	stopwatch(runDay12)
 }
 
 func stopwatch(fn func()) {
@@ -166,4 +168,12 @@ func runDay10() {
 	// part 2
 	part2 := trailFinder.SumRatingsForAllTrailheads()
 	fmt.Printf("Day 10 part 2: %d\n", part2)
+}
+
+func runDay12() {
+	input := parsing.ReadAndSplitDay(12)
+
+	// part 1
+	part1 := day12.NewPlotMap(input).TotalPrice()
+	fmt.Printf("Day 12 part 1: %d\n", part1)
 }
