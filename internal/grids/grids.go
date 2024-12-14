@@ -9,9 +9,9 @@ type Grid struct {
 	NumCols int
 }
 
-// PadGrid pads a source grid of a list of strings with empty lines
+// NewGrid pads a source grid of a list of strings with empty lines
 // above and below, and padding on either side of each line
-func PadGrid(lines []string, padSize int) (result Grid) {
+func NewGrid(lines []string, padSize int) (result Grid) {
 	numRows := len(lines)
 	numCols := len(lines[0])
 	totalRows := numRows + 2*padSize

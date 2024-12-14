@@ -23,7 +23,7 @@ func HasWord(word string, grid grids.Grid, offset grids.Offset, pos grids.Positi
 func CountWords(word string, source []string) (result int) {
 	runes := []rune(word)
 	pad := len(runes) - 1
-	grid := grids.PadGrid(source, pad)
+	grid := grids.NewGrid(source, pad)
 
 	for row := range grid.NumRows {
 		for col := range grid.NumCols {
@@ -56,7 +56,7 @@ func isMAS(r1, r2, r3 rune) bool {
 }
 
 func CountCrossMAS(source []string) (result int) {
-	grid := grids.PadGrid(source, 1)
+	grid := grids.NewGrid(source, 1)
 
 	for row := range len(source) {
 		for col := range len(source[0]) {

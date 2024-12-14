@@ -10,7 +10,7 @@ import (
 
 func TestFindsWordForwards(t *testing.T) {
 	// given
-	grid := grids.PadGrid([]string{"  XMAS  "}, 0)
+	grid := grids.NewGrid([]string{"  XMAS  "}, 0)
 
 	// then
 	assert.Equal(t, true, day4.HasWord(
@@ -23,7 +23,7 @@ func TestFindsWordForwards(t *testing.T) {
 
 func TestFindsWordBackwards(t *testing.T) {
 	// given
-	grid := grids.PadGrid([]string{"  SAMX  "}, 0)
+	grid := grids.NewGrid([]string{"  SAMX  "}, 0)
 
 	// then
 	assert.Equal(t, true, day4.HasWord(
@@ -36,7 +36,7 @@ func TestFindsWordBackwards(t *testing.T) {
 
 func TestFindsWordDown(t *testing.T) {
 	// given
-	grid := grids.PadGrid([]string{
+	grid := grids.NewGrid([]string{
 		"    X  ",
 		"    M  ",
 		"    A  ",
@@ -54,7 +54,7 @@ func TestFindsWordDown(t *testing.T) {
 
 func TestFindsWordUpRight(t *testing.T) {
 	// given
-	grid := grids.PadGrid([]string{
+	grid := grids.NewGrid([]string{
 		"     S ",
 		"    A  ",
 		"   M   ",
@@ -90,7 +90,7 @@ func TestCountsAllWords(t *testing.T) {
 
 func TestFindsCrossMAS(t *testing.T) {
 	// given
-	grid := grids.PadGrid([]string{
+	grid := grids.NewGrid([]string{
 		".M.S.",
 		"..A..",
 		".M.S."},

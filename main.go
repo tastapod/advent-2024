@@ -104,7 +104,7 @@ func runDay5() {
 }
 
 func runDay6() {
-	input := grids.PadGrid(parsing.ReadAndSplitDay(6), 1)
+	input := grids.NewGrid(parsing.ReadAndSplitDay(6), 1)
 
 	// part 1
 	guard := day6.NewGuardTracker(input)

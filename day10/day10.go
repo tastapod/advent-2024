@@ -13,7 +13,7 @@ type P = grids.Position
 type D = grids.Offset
 
 func NewTrailFinder(input []string) (tf TrailFinder) {
-	tf = TrailFinder{Grid: grids.PadGrid(input, 1)}
+	tf = TrailFinder{Grid: grids.NewGrid(input, 1)}
 	return
 }
 

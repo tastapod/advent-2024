@@ -21,7 +21,7 @@ var Part1Start = parsing.Lines(`
 ......#...
 `)
 
-var Part1Grid = grids.PadGrid(Part1Start, 1)
+var Part1Grid = grids.NewGrid(Part1Start, 1)
 
 func TestCountsSteps(t *testing.T) {
 	// given
