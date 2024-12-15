@@ -2,21 +2,43 @@ package day12
 
 import (
 	"fmt"
+	"github.com/tastapod/advent-2024/internal/debug"
 	"github.com/tastapod/advent-2024/internal/grids"
 	"slices"
 )
 
-type PlotMap struct {
-	plots grids.Grid
+type Vector struct {
+	Pos grids.Position
+	Dir grids.Dir
+}
+
+func (v Vector) PlotToLeft() grids.Position {
+	return v.Pos.Plus(v.Dir.Left().Offset())
+}
+
+func (v Vector) PlotAhead() grids.Position {
+	return v.Pos.Plus(v.Dir.Offset())
+}
+
+func (v Vector) TurnLeft() Vector {
+	return Vector{Pos: v.Pos, Dir: v.Dir.Left()}
+}
+
+func (v Vector) TurnRight() Vector {
+	return Vector{Pos: v.Pos, Dir: v.Dir.Right()}
+}
+
+func (v Vector) MoveForwards() Vector {
+	return Vector{Pos: v.Pos.Move(v.Dir), Dir: v.Dir}
 }
 
 type Region struct {
-	crop  string
+	Crop  string
 	Plots []grids.Position
 }
 
 func (r *Region) String() string {
-	return fmt.Sprintf("%s: %v", r.crop, r.Plots)
+	return fmt.Sprintf("%s: %v", r.Crop, r.Plots)
 }
 
 // Perimeter calculates the perimeter of a region.
@@ -36,7 +58,57 @@ func (r *Region) Perimeter() (result int) {
 }
 
 func (r *Region) Price() int {
-	return r.Perimeter() * len(r.Plots)
+	return r.Perimeter() * r.Area()
+}
+
+func (r *Region) Area() int {
+	return len(r.Plots)
+}
+
+func (r *Region) DiscountedPrice() int {
+	return r.NumSides() * r.Area()
+}
+
+// NumSides counts the number of sides this region has, by counting the number
+// of corners (turns) in a circuit.
+//
+// We start in the top-left corner (first plot) and 'keep our hand on the left wall'
+// until we are back at the original position & direction
+//
+// This means:
+// - turn left if there is a plot to our left
+// - otherwise move forward if there is a plot ahead
+// - otherwise turn right
+func (r *Region) NumSides() (turns int) {
+	// start in the top-left corner, facing right
+	start := Vector{Pos: r.Plots[0], Dir: grids.Right}
+	here := start
+
+	for {
+		switch {
+		// If there is a plot to my left, move to it
+		case slices.Contains(r.Plots, here.PlotToLeft()):
+			here = here.TurnLeft().MoveForwards()
+			turns++
+
+		// otherwise try to move forwards along the fence
+		case slices.Contains(r.Plots, here.PlotAhead()):
+			here = here.MoveForwards()
+
+		// otherwise turn right
+		default:
+			here = here.TurnRight()
+			turns++
+		}
+
+		if here == start {
+			return
+		}
+	}
+}
+
+type PlotMap struct {
+	plots grids.Grid
 }
 
 func (pm *PlotMap) FindRegions() (result []*Region) {
@@ -56,14 +128,14 @@ func (pm *PlotMap) FindRegions() (result []*Region) {
 			crop := pm.plots.At(row, col)
 
 			if pm.plots.At(row-1, col) == crop {
-				// join with above
+				// Part of region above
 				above := regionsByPlot[P(row-1, col)]
 
 				// Do we need to merge the regions above and left?
 				if pm.plots.At(row, col-1) == crop {
-					// left has same crop as above
+					// Left region has same crop as above
 					if left := regionsByPlot[P(row, col-1)]; above != left {
-						// different regions, so merge them
+						// We need to merge the left mini-region with the one above
 						for _, l := range left.Plots {
 							joinRegion(row-1, col, l)
 						}
@@ -80,7 +152,7 @@ func (pm *PlotMap) FindRegions() (result []*Region) {
 			} else {
 				// start a new region
 				thisRegion = &Region{
-					crop:  string(crop),
+					Crop:  string(crop),
 					Plots: []grids.Position{me},
 				}
 				regionsByPlot[me] = thisRegion
@@ -94,6 +166,15 @@ func (pm *PlotMap) FindRegions() (result []*Region) {
 func (pm *PlotMap) TotalPrice() (result int) {
 	for _, region := range pm.FindRegions() {
 		result += region.Price()
+	}
+	return
+}
+
+func (pm *PlotMap) TotalDiscountedPrice() (result int) {
+	regions := pm.FindRegions()
+	debug.Debug("Checking", len(regions), "regions")
+	for _, region := range regions {
+		result += region.DiscountedPrice()
 	}
 	return
 }

@@ -56,11 +56,6 @@ func (g *Grid) Row(row int) []rune {
 	return g.grid[row+g.PadSize][g.PadSize : g.PadSize+g.NumCols]
 }
 
-type Position struct {
-	Row int
-	Col int
-}
-
 type Offset struct {
 	DRow int
 	DCol int
@@ -80,6 +75,11 @@ func OffsetFrom(p1, p2 Position) Offset {
 	}
 }
 
+type Position struct {
+	Row int
+	Col int
+}
+
 func (p Position) Plus(offset Offset) Position {
 	return Position{Row: p.Row + offset.DRow, Col: p.Col + offset.DCol}
 }
@@ -88,18 +88,44 @@ func (p Position) Minus(offset Offset) Position {
 	return Position{Row: p.Row - offset.DRow, Col: p.Col - offset.DCol}
 }
 
-type Dir rune
+func (p Position) Move(dir Dir) Position {
+	return p.Plus(dir.Offset())
+}
+
+type Dir string
 
 const (
-	Up    Dir = '^'
-	Down      = 'v'
-	Left      = '<'
-	Right     = '>'
+	Up    Dir = "^"
+	Down  Dir = "v"
+	Left  Dir = "<"
+	Right Dir = ">"
 )
 
-var Moves = []Offset{
-	Up:    {DRow: -1, DCol: +0},
-	Down:  {DRow: +1, DCol: +0},
-	Left:  {DRow: +0, DCol: -1},
-	Right: {DRow: +0, DCol: +1},
+// Right turn
+func (dir Dir) Right() Dir {
+	return map[Dir]Dir{
+		Up:    Right,
+		Right: Down,
+		Down:  Left,
+		Left:  Up,
+	}[dir]
+}
+
+// Left turn
+func (dir Dir) Left() Dir {
+	return map[Dir]Dir{
+		Up:    Left,
+		Left:  Down,
+		Down:  Right,
+		Right: Up,
+	}[dir]
+}
+
+func (dir Dir) Offset() Offset {
+	return map[Dir]Offset{
+		Up:    {DRow: -1, DCol: +0},
+		Down:  {DRow: +1, DCol: +0},
+		Left:  {DRow: +0, DCol: -1},
+		Right: {DRow: +0, DCol: +1},
+	}[dir]
 }
