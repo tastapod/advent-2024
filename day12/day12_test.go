@@ -18,27 +18,21 @@ func TestFindsRegions(t *testing.T) {
 	// given
 	plotMap := day12.NewPlotMap(Map1)
 
-	// when
-	regions := plotMap.FindRegions()
-
 	// then
-	assert.Equal(t, 5, len(regions))
+	assert.Equal(t, 5, len(plotMap.RegionsById))
 }
 
 func TestCalculatesPerimiterAndPrice(t *testing.T) {
 	// given
 	plotMap := day12.NewPlotMap(Map1)
 
-	// when
-	regions := plotMap.FindRegions()
-
 	// then
 	expectedPerimeter := []int{10, 8, 10, 4, 8}
 	expectedPrice := []int{40, 32, 40, 4, 24}
 
 	for i := range len(expectedPerimeter) {
-		assert.Equal(t, expectedPerimeter[i], regions[i].Perimeter())
-		assert.Equal(t, expectedPrice[i], regions[i].Price())
+		assert.Equal(t, expectedPerimeter[i], plotMap.RegionsById[i].Perimeter())
+		assert.Equal(t, expectedPrice[i], plotMap.RegionsById[i].Price())
 	}
 }
 
@@ -92,7 +86,7 @@ EEEC`)
 func TestCountsSidesFromExample(t *testing.T) {
 	// given
 	plotMap := day12.NewPlotMap(Map3)
-	region := plotMap.FindRegions()[2]
+	region := plotMap.RegionsById[2]
 
 	// then
 	assert.Equal(t, "C", region.Crop)
@@ -123,6 +117,7 @@ func TestCalculatesDiscountedPriceForRegionWithHoles(t *testing.T) {
 }
 
 func xTestCalculatesPart2(t *testing.T) {
+	// 891044 is too small
 	input := parsing.FileLines("input.txt")
 	assert.Equal(t, 0, day12.NewPlotMap(input).TotalDiscountedPrice())
 }

@@ -1,6 +1,8 @@
 package sets
 
-import "iter"
+import (
+	"iter"
+)
 
 type Set[T comparable] struct {
 	values map[T]bool // values are keys of underlying set
