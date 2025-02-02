@@ -163,11 +163,11 @@ func runDay10() {
 
 	// part 1
 	part1 := trailFinder.SumTrailsFromAllTrailheads()
-	fmt.Printf("Day 10 part 1: %d\n", part1)
+	fmt.Printf("Day 10 part 1: %d\n", part1) // 510
 
 	// part 2
 	part2 := trailFinder.SumRatingsForAllTrailheads()
-	fmt.Printf("Day 10 part 2: %d\n", part2)
+	fmt.Printf("Day 10 part 2: %d\n", part2) // 1058
 }
 
 func runDay12() {
@@ -175,5 +175,5 @@ func runDay12() {
 
 	// part 1
 	part1 := day12.NewPlotMap(input).TotalPrice()
-	fmt.Printf("Day 12 part 1: %d\n", part1)
+	fmt.Printf("Day 12 part 1: %d\n", part1) // 1446042
 }
